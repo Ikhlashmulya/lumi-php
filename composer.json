@@ -1,0 +1,15 @@
+{
+    "name": "ikhlashmulya/regular-php",
+    "autoload": {
+        "psr-4": {
+            "Ikhlashmulya\\RegularPHP\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ikhlashmulya",
+            "email": "nurahmanmulya@gmail.com"
+        }
+    ],
+    "require": {}
+}
