@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikhlashmulya\RegularPHP;
+namespace Lumi\LumiPHP;
 
 class Response {
     private static ?self $res = null;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikhlashmulya\RegularPHP;
+namespace Lumi\LumiPHP;
 
 class Request {
     private static ?self $req = null;

@@ -2,8 +2,8 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Ikhlashmulya\RegularPHP\Application;
-use Ikhlashmulya\RegularPHP\Context;
+use Lumi\LumiPHP\Application;
+use Lumi\LumiPHP\Context;
 
 $app = new Application();
 

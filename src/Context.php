@@ -1,6 +1,6 @@
 <?php
 
-namespace Ikhlashmulya\RegularPHP;
+namespace Lumi\LumiPHP;
 
 class Context {
     public Request $req;

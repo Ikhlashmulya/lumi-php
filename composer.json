@@ -1,8 +1,8 @@
 {
-    "name": "ikhlashmulya/regular-php",
+    "name": "lumi/lumi-php",
     "autoload": {
         "psr-4": {
-            "Ikhlashmulya\\RegularPHP\\": "src/"
+            "Lumi\\LumiPHP\\": "src/"
         }
     },
     "authors": [
