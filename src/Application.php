@@ -3,24 +3,26 @@
 namespace Lumi\LumiPHP;
 
 class Application {
-    private $routes = array();
+    private Router $router;
 
-    public function get(string $path, callable $handler) {
-        $this->routes['GET'][$path] = $handler;
+    public function __construct() {
+        $this->router = new Router;
     }
 
-    public function post(string $path, callable $handler) {
-        $this->routes['POST'][$path] = $handler;
+    public function get(string $path, callable $handler) {
+        $this->router->add('GET', $path, $handler);
     }
 
     public function run() {
-
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $method = $_SERVER['REQUEST_METHOD'];
 
-        if (isset($this->routes[$method][$uri])) {
-            $callback = $this->routes[$method][$uri];
-            $callback(new Context());
+        [$path, $matches, $handler] = $this->router->has($method, $uri);
+        if ($handler !== null) {
+            $req = new Request($path, $matches);
+            $res = new Response();
+            $ctx = new Context($req, $res);
+            $handler($ctx);
         }
     }
 }
