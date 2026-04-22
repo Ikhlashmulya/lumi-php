@@ -7,10 +7,9 @@ class Context {
     public Response $res;
     private array $context;
 
-    public function __construct()
-    {
-        $this->req = new Request();
-        $this->res = new Response();
+    public function __construct(Request $req, Response $res) {
+        $this->req = $req;
+        $this->res = $res;
     }
 
     public function set(string $key, mixed $value) {
