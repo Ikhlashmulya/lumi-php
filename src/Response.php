@@ -11,7 +11,7 @@ class Response
 
     public function text(string $text): void
     {
-        $this->header('Content-Type', 'application/json; charset=utf-8');
+        $this->header('Content-Type', 'text/plain; charset=utf-8');
         echo $text;
     }
 
