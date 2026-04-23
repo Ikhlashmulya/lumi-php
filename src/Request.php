@@ -13,12 +13,12 @@ class Request
         $this->matches = $matches;
     }
 
-    public function getParam(string $key): string
+    public function getParam(string $key = ''): string|array|null
     {
         $paramNames = PathUtil::getParamNames($this->path);
         $params = array_combine($paramNames, $this->matches);
 
-        return $params[$key];
+        return $key === '' ? $params : (isset($params[$key]) ? $params[$key] : null);
     }
 
     public function header(string $key): string|null
