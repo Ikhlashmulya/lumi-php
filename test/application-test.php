@@ -15,4 +15,12 @@ $app->get('/users/{id}', function (Context $ctx) {
     $ctx->res->text('Hello ' . $ctx->req->getParam('id'));
 });
 
+$app->post('/users', function (Context $ctx) {
+    $data = $ctx->req->json();
+
+    $ctx->res->json([
+        'message' => 'Hello ' . $data['name']
+    ]);
+});
+
 $app->run();

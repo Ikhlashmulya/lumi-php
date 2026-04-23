@@ -20,4 +20,10 @@ class Request
 
         return $params[$key];
     }
+
+    public function json(): array
+    {
+        $json_data = file_get_contents('php://input');
+        return json_decode($json_data, true);
+    }
 }
