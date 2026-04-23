@@ -21,6 +21,12 @@ class Request
         return $params[$key];
     }
 
+    public function header(string $key): string|null
+    {
+        $headers = getallheaders();
+        return isset($headers[$key]) ? $headers[$key] : null;
+    }
+
     public function json(): array
     {
         $json_data = file_get_contents('php://input');
