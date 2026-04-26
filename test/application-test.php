@@ -7,6 +7,8 @@ use Lumi\LumiPHP\Context;
 
 $app = new Application();
 
+$app->setView(__DIR__ . '/views');
+
 $app->get('/', function (Context $ctx) {
     $ctx->res->text('Hello World');
 });
@@ -21,6 +23,12 @@ $app->post('/users', function (Context $ctx) {
     $ctx->res->json([
         'message' => 'Hello ' . $data['name']
     ]);
+});
+
+$app->get('/test/view', function (Context $ctx) {
+    $name = 'ikhlashmulya';
+
+    $ctx->res->view('index', compact('name'));
 });
 
 $app->run();
