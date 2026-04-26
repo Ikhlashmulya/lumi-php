@@ -4,6 +4,22 @@ namespace Lumi\LumiPHP;
 
 class Response 
 {
+    private string $viewPath;
+
+    public function setView(string $path): void
+    {
+        $this->viewPath = $path;
+    }
+
+    public function view(string $vw, array $data = array()): void
+    {
+        $_ = $data;
+
+        $this->header('Content-Type', 'text/html; charset=utf-8');
+
+        require_once $this->viewPath . '/' . $vw . '.php';
+    }
+
     public function header(string $key, string $value): void
     {
         header(sprintf("%s: %s", $key, $value));

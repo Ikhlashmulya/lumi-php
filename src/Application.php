@@ -5,10 +5,12 @@ namespace Lumi\LumiPHP;
 class Application 
 {
     private Router $router;
+    private Response $res;
 
     public function __construct() 
     {
         $this->router = new Router;
+        $this->res = new Response;
     }
 
     public function get(string $path, callable $handler): void
@@ -51,6 +53,11 @@ class Application
         $this->router->add('HEAD', $path, $handler);
     }
 
+    public function setView(string $path): void
+    {
+        $this->res->setView($path);
+    }
+
     public function run(): void
     {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -59,7 +66,7 @@ class Application
         [$path, $matches, $handler] = $this->router->has($method, $uri);
         if ($handler !== null) {
             $req = new Request($path, $matches);
-            $res = new Response();
+            $res = $this->res;
             $ctx = new Context($req, $res);
             $handler($ctx);
         }
