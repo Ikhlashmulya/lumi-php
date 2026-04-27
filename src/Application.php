@@ -63,12 +63,12 @@ class Application
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $method = $_SERVER['REQUEST_METHOD'];
 
-        [$path, $matches, $handler] = $this->router->has($method, $uri);
-        if ($handler !== null) {
+        [$path, $matches, $handlers] = $this->router->has($method, $uri);
+        if (is_array($handlers) && count($handlers) > 0) {
             $req = new Request($path, $matches);
             $res = $this->res;
             $ctx = new Context($req, $res);
-            $handler($ctx);
+            $handlers[0]($ctx);
         }
     }
 }
