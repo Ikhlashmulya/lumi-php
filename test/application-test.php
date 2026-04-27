@@ -31,4 +31,14 @@ $app->get('/test/view', function (Context $ctx) {
     $ctx->res->view('index', compact('name'));
 });
 
+$testMiddleware = function(Context $ctx) {
+    $ctx->set('username', 'ikhlashmulya');
+    $ctx->next();
+};
+
+$app->get('/test/middleware', $testMiddleware, function (Context $ctx) {
+    $name = $ctx->get('username');
+    $ctx->res->text("hello $name");
+});
+
 $app->run();

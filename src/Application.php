@@ -13,44 +13,44 @@ class Application
         $this->res = new Response;
     }
 
-    public function get(string $path, callable $handler): void
+    public function get(string $path, callable ...$handler): void
     {
-        $this->router->add('GET', $path, $handler);
+        $this->router->add('GET', $path, ...$handler);
     }
 
-    public function post(string $path, callable $handler): void
+    public function post(string $path, callable ...$handler): void
     {
-        $this->router->add('POST', $path, $handler);
+        $this->router->add('POST', $path, ...$handler);
     }
 
-    public function put(string $path, callable $handler): void
+    public function put(string $path, callable ...$handler): void
     {
-        $this->router->add('PUT', $path, $handler);
+        $this->router->add('PUT', $path, ...$handler);
     }
 
-    public function patch(string $path, callable $handler): void
+    public function patch(string $path, callable ...$handler): void
     {
-        $this->router->add('PATCH', $path, $handler);
+        $this->router->add('PATCH', $path, ...$handler);
     }
 
-    public function delete(string $path, callable $handler): void
+    public function delete(string $path, callable ...$handler): void
     {
-        $this->router->add('DELETE', $path, $handler);
+        $this->router->add('DELETE', $path, ...$handler);
     }
 
-    public function trace(string $path, callable $handler): void
+    public function trace(string $path, callable ...$handler): void
     {
-        $this->router->add('TRACE', $path, $handler);
+        $this->router->add('TRACE', $path, ...$handler);
     }
 
-    public function options(string $path, callable $handler): void
+    public function options(string $path, callable ...$handler): void
     {
-        $this->router->add('OPTIONS', $path, $handler);
+        $this->router->add('OPTIONS', $path, ...$handler);
     }
 
-    public function head(string $path, callable $handler): void
+    public function head(string $path, callable ...$handler): void
     {
-        $this->router->add('HEAD', $path, $handler);
+        $this->router->add('HEAD', $path, ...$handler);
     }
 
     public function setView(string $path): void
@@ -68,6 +68,7 @@ class Application
             $req = new Request($path, $matches);
             $res = $this->res;
             $ctx = new Context($req, $res);
+            $ctx->setHandlers(0, $handlers);
             $handlers[0]($ctx);
         }
     }
