@@ -22,7 +22,7 @@ class Router
         $this->routes[] = $route;
     }
 
-    public function has(string $method, string $uri): array
+    public function match(string $method, string $uri): array
     {
         foreach ($this->routes as $route) {
             if($route->method == $method){

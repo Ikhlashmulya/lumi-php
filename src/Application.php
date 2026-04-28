@@ -63,7 +63,7 @@ class Application
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $method = $_SERVER['REQUEST_METHOD'];
 
-        [$path, $matches, $handlers] = $this->router->has($method, $uri);
+        [$path, $matches, $handlers] = $this->router->match($method, $uri);
         if (is_array($handlers) && count($handlers) > 0) {
             $req = new Request($path, $matches);
             $res = $this->res;
