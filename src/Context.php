@@ -6,9 +6,10 @@ class Context
 {
     public Request $req;
     public Response $res;
-    private array $context;
-    private int $idxHandler;
-    private array $handlers;
+    private array $context = array();
+    private int $idxHandler = 0;
+    private array $calledNext = array();
+    private array $handlers = array();
 
     public function __construct(Request $req, Response $res)
     {
@@ -24,6 +25,14 @@ class Context
 
     public function next(): void
     {
+        $currentIdx = $this->idxHandler;
+
+        if (isset($this->calledNext[$currentIdx])) {
+            throw new \RuntimeException('next() called multiple times');
+        }
+
+        $this->calledNext[$currentIdx] = true;
+
         $this->idxHandler++;
 
         if (isset($this->handlers[$this->idxHandler])) {

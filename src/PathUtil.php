@@ -24,4 +24,11 @@ class PathUtil
         array_shift($matches);
         return $matches;
     }
+
+    public static function isPrefixMatch(string $rawPath, string $uri): bool
+    {
+        if ($rawPath === '/') return true;
+
+        return $uri === $rawPath || str_starts_with($uri, rtrim($rawPath, '/') . '/');
+    }
 }

@@ -6,6 +6,7 @@ class Application
 {
     private Router $router;
     private Response $res;
+    private array $middlewareRoutes = array();
 
     public function __construct() 
     {
@@ -56,6 +57,24 @@ class Application
     public function setView(string $path): void
     {
         $this->res->setView($path);
+    }
+
+    public function use(string|callable $args1, callable ...$handlers): void
+    {
+        $path = '/';
+        if (is_string($args1)) {
+            $path = $args1;
+        }
+
+        $handlerList = [];
+        
+        if (is_callable($args1)) {
+            $handlerList[] = $args1;
+        }
+
+        array_push($handlerList, ...$handlers);
+
+        $this->router->addMiddleware($path, ...$handlerList);
     }
 
     public function run(): void
