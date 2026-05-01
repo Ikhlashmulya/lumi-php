@@ -11,6 +11,12 @@ class Response
         $this->viewPath = $path;
     }
 
+    public function status(int $code): self
+    {
+        http_response_code($code);
+        return $this;
+    }
+
     public function view(string $vw, array $data = array()): void
     {
         $_ = $data;

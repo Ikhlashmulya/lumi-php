@@ -30,7 +30,7 @@ $app->get('/users/{id}', function (Context $ctx) {
 $app->post('/users', function (Context $ctx) {
     $data = $ctx->req->json();
 
-    $ctx->res->json([
+    $ctx->res->status(201)->json([
         'message' => 'Hello ' . $data['name']
     ]);
 });
