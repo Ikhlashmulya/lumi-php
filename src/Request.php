@@ -32,6 +32,17 @@ class Request
         return isset($headers[$key]) ? $headers[$key] : null;
     }
 
+    public function body(): array
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            return $_POST;
+        }
+
+        [$post, $_] = request_parse_body();
+
+        return $post;
+    }
+
     public function json(): array
     {
         $json_data = file_get_contents('php://input');

@@ -56,4 +56,9 @@ $app->get('/test/middleware', $testMiddleware, function (Context $ctx) {
     $ctx->res->text("hello $name");
 });
 
+$app->patch('/test/body', $testMiddleware, function (Context $ctx) {
+    $body = $ctx->req->body();
+    $ctx->res->json($body);
+});
+
 $app->run();
