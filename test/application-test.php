@@ -28,7 +28,8 @@ $app->get('/test/redirect', function (Context $ctx) {
 });
 
 $app->get('/users/{id}', function (Context $ctx) {
-    $ctx->res->text('Hello ' . $ctx->req->getParam('id') . ' middleware? ' . $ctx->get('fromMiddleware'));
+    $page = $ctx->req->query('page');
+    $ctx->res->text('Hello ' . $ctx->req->param('id') . ' middleware? ' . $ctx->get('fromMiddleware') . ' page? ' . $page ?? '');
 });
 
 $app->post('/users', function (Context $ctx) {
