@@ -23,6 +23,10 @@ $app->get('/', function (Context $ctx) {
     $ctx->res->text('Hello World' . ' middleware? ' . $ctx->get('fromMiddleware'));
 });
 
+$app->get('/test/redirect', function (Context $ctx) {
+    $ctx->res->redirect('/');
+});
+
 $app->get('/users/{id}', function (Context $ctx) {
     $ctx->res->text('Hello ' . $ctx->req->getParam('id') . ' middleware? ' . $ctx->get('fromMiddleware'));
 });

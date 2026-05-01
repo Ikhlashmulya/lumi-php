@@ -17,6 +17,11 @@ class Response
         return $this;
     }
 
+    public function redirect(string $url): void
+    {
+        header("Location: $url", response_code: 302);
+    }
+
     public function view(string $vw, array $data = array()): void
     {
         $_ = $data;
