@@ -6,11 +6,13 @@ class Request
 {
     private string $path;
     private array $matches;
+    public string $method;
 
     public function __construct(string $path, array $matches)
     {
         $this->path = $path;
         $this->matches = $matches;
+        $this->method = $_SERVER['REQUEST_METHOD'];
     }
 
     public function param(string $key = ''): string|array|null
@@ -34,7 +36,7 @@ class Request
 
     public function body(): array
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($this->method === 'POST') {
             return $_POST;
         }
 
