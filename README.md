@@ -4,13 +4,19 @@ Lumi is a tiny PHP framework for learning and experimenting how routing, middlew
 
 ## Installation
 
-Install dependencies with Composer:
+Install Lumi with Composer:
+
+```bash
+composer require lumi/lumi-php
+```
+
+## Development
+
+For local development, install dependencies first:
 
 ```bash
 composer install
 ```
-
-## Development
 
 Run the sample application:
 
@@ -187,7 +193,7 @@ View data is available through the `$_` variable:
 
 ## TODO
 
-- Route groups with GoFiber-style API (if possible):
+- Route groups with GoFiber-style API:
 
     ```php
     $api = $app->group('/api');
