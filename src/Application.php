@@ -7,6 +7,7 @@ class Application
     private Router $router;
     private Response $res;
     private array $middlewareRoutes = array();
+    private mixed $notFoundHandler = null;
 
     public function __construct() 
     {
@@ -77,6 +78,11 @@ class Application
         $this->router->addMiddleware($path, ...$handlerList);
     }
 
+    public function notFound(callable $handler): void
+    {
+        $this->notFoundHandler = $handler;
+    }
+
     public function run(): void
     {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -89,6 +95,15 @@ class Application
             $ctx = new Context($req, $res);
             $ctx->setHandlers(0, $handlers);
             $handlers[0]($ctx);
+        } else {
+            $req = new Request('', []);
+            $res = $this->res->status(404);
+            $ctx = new Context($req, $res);
+            if (is_callable($this->notFoundHandler)) {
+                ($this->notFoundHandler)($ctx);
+            } else {
+                $res->text('Url Not Found');
+            }
         }
     }
 }

@@ -61,4 +61,10 @@ $app->patch('/test/body', $testMiddleware, function (Context $ctx) {
     $ctx->res->json($body);
 });
 
+$app->notFound(function (Context $ctx) {
+    $ctx->res->json([
+        'message' => 'Resource Not Found'
+    ]);
+});
+
 $app->run();
