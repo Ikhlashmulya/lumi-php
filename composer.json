@@ -1,5 +1,7 @@
 {
     "name": "lumi/lumi-php",
+    "description": "A tiny PHP framework for learning routing, middleware, and HTTP abstractions.",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Lumi\\LumiPHP\\": "src/"
@@ -11,5 +13,7 @@
             "email": "nurahmanmulya@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "php": ">=8.4"
+    }
 }

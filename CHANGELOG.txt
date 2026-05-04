@@ -1,3 +1,14 @@
+v 0.1.1
+- update composer.json: add license and require php >= 8.4
+
+v 0.1.0
+- add support for POST, PUT, PATCH, DELETE, OPTIONS, HEAD, and TRACE http methods
+- add global and path-scoped middleware support
+- add middleware/handler chaining with context next()
+- add request helpers for query params, headers, form body, and JSON body
+- add response helpers for JSON, status code, redirect, headers, and PHP views
+- add view directory configuration with setView()
+
 v 0.0.1
 - add handle GET http method
 - handle get path param
