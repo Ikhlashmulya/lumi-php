@@ -61,6 +61,12 @@ $app->patch('/test/body', $testMiddleware, function (Context $ctx) {
     $ctx->res->json($body);
 });
 
+$app->onError(function (\Throwable $e, Context $ctx) {
+    $ctx->res->status(500)->json([
+        'message' => $e->getMessage()
+    ]);
+});
+
 $app->notFound(function (Context $ctx) {
     $ctx->res->json([
         'message' => 'Resource Not Found'
@@ -70,6 +76,10 @@ $app->notFound(function (Context $ctx) {
 $admin = $app->group('/admin');
 $admin->get('/test', function (Context $ctx) {
     $ctx->res->text('Hello Admin');
+});
+
+$app->get('/throw', function (Context $ctx) {
+    throw new ErrorException('Test error');
 });
 
 $app->run();

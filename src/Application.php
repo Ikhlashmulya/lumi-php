@@ -8,6 +8,7 @@ class Application implements RouterInterface
     private Response $res;
     private array $middlewareRoutes = array();
     private mixed $notFoundHandler = null;
+    private mixed $onErrorHandler = null;
 
     public function __construct() 
     {
@@ -83,6 +84,11 @@ class Application implements RouterInterface
         $this->notFoundHandler = $handler;
     }
 
+    public function onError(callable $handler): void
+    {
+        $this->onErrorHandler = $handler;
+    }
+
     public function group(string $path, callable ...$handlers): RouterGroup
     {
         return new RouterGroup($this, $path, ...$handlers);
@@ -99,7 +105,15 @@ class Application implements RouterInterface
             $res = $this->res;
             $ctx = new Context($req, $res);
             $ctx->setHandlers(0, $handlers);
-            $handlers[0]($ctx);
+            try {
+                $handlers[0]($ctx);
+            } catch (\Throwable $e) {
+                if (is_callable($this->onErrorHandler)) {
+                    ($this->onErrorHandler)($e, $ctx);
+                } else {
+                    throw $e;
+                }
+            }
         } else {
             $req = new Request('', []);
             $res = $this->res->status(404);
