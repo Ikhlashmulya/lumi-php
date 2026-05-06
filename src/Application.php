@@ -2,7 +2,7 @@
 
 namespace Lumi\LumiPHP;
 
-class Application 
+class Application implements RouterInterface
 {
     private Router $router;
     private Response $res;
