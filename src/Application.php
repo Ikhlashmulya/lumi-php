@@ -83,6 +83,11 @@ class Application
         $this->notFoundHandler = $handler;
     }
 
+    public function group(string $path, callable ...$handlers): RouterGroup
+    {
+        return new RouterGroup($this, $path, ...$handlers);
+    }
+
     public function run(): void
     {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);

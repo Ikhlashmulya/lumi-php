@@ -67,4 +67,9 @@ $app->notFound(function (Context $ctx) {
     ]);
 });
 
+$admin = $app->group('/admin');
+$admin->get('/test', function (Context $ctx) {
+    $ctx->res->text('Hello Admin');
+});
+
 $app->run();
