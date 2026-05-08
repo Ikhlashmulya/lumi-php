@@ -33,10 +33,14 @@ class Context
 
         $this->calledNext[$currentIdx] = true;
 
-        $this->idxHandler++;
+        $this->idxHandler = $currentIdx + 1;
 
-        if (isset($this->handlers[$this->idxHandler])) {
-            ($this->handlers[$this->idxHandler])($this);
+        try {
+            if (isset($this->handlers[$this->idxHandler])) {
+                ($this->handlers[$this->idxHandler])($this);
+            }
+        } finally {
+            $this->idxHandler = $currentIdx;
         }
     }
 
