@@ -1,3 +1,14 @@
+v 0.2.0
+- add route group support with shared path prefixes and group middleware
+- add custom not found handler support
+- add custom error handler support for uncaught handler and middleware exceptions
+- add RouterInterface as a shared contract for Application and RouterGroup
+- fix Context next() handler index handling
+- add unit test runner and tests for routing, path utilities, request helpers, and context behavior
+- add composer test script
+- update README documentation for route groups, error handling, request helpers, response helpers, and roadmap TODOs
+- update package description
+
 v 0.1.1
 - update composer.json: add license and require php >= 8.4
 

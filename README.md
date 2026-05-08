@@ -1,6 +1,6 @@
 # Lumi PHP Framework
 
-Lumi is a tiny PHP framework for learning and experimenting how routing, middleware, and HTTP abstractions work internally.
+Lumi is a simple PHP framework for building simple web applications and APIs with expressive routing, middleware, request helpers, responses, and view rendering.
 
 ## Installation
 
@@ -62,7 +62,7 @@ Route parameters can be read from the request object:
 
 ```php
 $app->get('/users/{id}', function (Context $ctx) {
-    $id = $ctx->req->getParam('id');
+    $id = $ctx->req->param('id');
 
     $ctx->res->text("User ID: $id");
 });
@@ -71,7 +71,34 @@ $app->get('/users/{id}', function (Context $ctx) {
 To get all route parameters:
 
 ```php
-$params = $ctx->req->getParam();
+$params = $ctx->req->param();
+```
+
+## Route Groups
+
+Group routes under a shared path prefix:
+
+```php
+$api = $app->group('/api');
+
+$api->get('/users', function (Context $ctx) {
+    $ctx->res->json([
+        'users' => [],
+    ]);
+});
+```
+
+Groups can also receive middleware:
+
+```php
+$admin = $app->group('/admin', function (Context $ctx) {
+    $ctx->set('area', 'admin');
+    $ctx->next();
+});
+
+$admin->get('/dashboard', function (Context $ctx) {
+    $ctx->res->text('Admin dashboard');
+});
 ```
 
 ## Middleware
@@ -129,6 +156,18 @@ $ctx->get('key');
 
 ## Request
 
+Read route parameters:
+
+```php
+$id = $ctx->req->param('id');
+```
+
+Read query values:
+
+```php
+$page = $ctx->req->query('page');
+```
+
 Read headers:
 
 ```php
@@ -139,6 +178,12 @@ Read JSON request body:
 
 ```php
 $data = $ctx->req->json();
+```
+
+Read form request body:
+
+```php
+$data = $ctx->req->body();
 ```
 
 ## Response
@@ -161,6 +206,20 @@ Set a response header:
 
 ```php
 $ctx->res->header('X-App', 'Lumi');
+```
+
+Redirect to another URL:
+
+```php
+$ctx->res->redirect('/login');
+```
+
+Set a status code:
+
+```php
+$ctx->res->status(201)->json([
+    'message' => 'Created',
+]);
 ```
 
 ## Views
@@ -191,23 +250,38 @@ View data is available through the `$_` variable:
 <h1>Hello <?= $_['name'] ?></h1>
 ```
 
+## Error Handling
+
+Customize the 404 response:
+
+```php
+$app->notFound(function (Context $ctx) {
+    $ctx->res->status(404)->json([
+        'message' => 'Not found',
+    ]);
+});
+```
+
+Handle uncaught errors from route handlers and middleware:
+
+```php
+$app->onError(function (Throwable $error, Context $ctx) {
+    $ctx->res->status(500)->json([
+        'message' => 'Internal server error',
+    ]);
+});
+```
+
 ## TODO
 
-- Route groups with GoFiber-style API:
+- Make `Response` easier to inspect in tests:
+    - Store status code, headers, and body internally
+    - Keep response sending separate from response building
+
+- Testing utility:
 
     ```php
-    $api = $app->group('/api');
-    $api->get('/users', $handler);
-
-    $admin = $app->group('/admin', $authMiddleware);
-    $admin->get('/dashboard', $handler);
-    ```
-
-- Not found and error handlers:
-
-    ```php
-    $app->notFound($handler);
-    $app->onError($handler);
+    $response = $app->test('GET', '/users/1');
     ```
 
 - Built-in middleware:
@@ -216,10 +290,27 @@ View data is available through the `$_` variable:
     - JSON body parser middleware
     - static file middleware
 
-- Testing utility:
+- Route helpers for all methods:
 
     ```php
-    $response = $app->test('GET', '/users/1');
+    $app->all('/health', $handler);
+    $app->any('/webhook', $handler);
+    ```
+
+- Route parameter constraints:
+
+    ```php
+    $app->get('/users/{id:number}', $handler);
+    $app->get('/posts/{slug}', $handler);
+    ```
+
+- Nested route groups:
+
+    ```php
+    $api = $app->group('/api');
+    $v1 = $api->group('/v1');
+
+    $v1->get('/users', $handler);
     ```
 
 - Simple dependency injection container. (priority: low)

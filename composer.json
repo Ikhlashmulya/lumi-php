@@ -1,6 +1,7 @@
 {
     "name": "lumi/lumi-php",
-    "description": "A tiny PHP framework for learning routing, middleware, and HTTP abstractions.",
+    "description": "Lumi is a simple PHP framework for building simple web applications.",
+    "version": "0.2.0",
     "license": "MIT",
     "autoload": {
         "psr-4": {
