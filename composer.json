@@ -7,6 +7,9 @@
             "Lumi\\LumiPHP\\": "src/"
         }
     },
+    "scripts": {
+        "test": "php test/run.php"
+    },
     "authors": [
         {
             "name": "Ikhlashmulya",
