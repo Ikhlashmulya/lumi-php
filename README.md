@@ -290,6 +290,13 @@ $app->onError(function (Throwable $error, Context $ctx) {
     - JSON body parser middleware
     - static file middleware
 
+- File upload request helpers:
+
+    ```php
+    $file = $ctx->req->file('avatar');
+    $files = $ctx->req->files();
+    ```
+
 - Route helpers for all methods:
 
     ```php
