@@ -4,7 +4,12 @@ namespace Lumi\LumiPHP;
 
 class Response 
 {
-    private string $viewPath;
+    private string $viewPath = '';
+    public int $statusCode = 200;
+    public array $headers = [];
+    public string|false $body = '';
+    public string|false $redirectUrl = false;
+    public array $viewData = [];
 
     public function setView(string $path): void
     {
@@ -13,38 +18,42 @@ class Response
 
     public function status(int $code): self
     {
-        http_response_code($code);
+        $this->statusCode = $code;
         return $this;
     }
 
     public function redirect(string $url): void
     {
-        header("Location: $url", response_code: 302);
+        $this->statusCode = 302;
+        $this->redirectUrl = $url;
     }
 
-    public function view(string $vw, array $data = array()): void
+    public function view(string $viewName, array $data = array()): void
     {
         $_ = $data;
+        unset($data);
 
         $this->header('Content-Type', 'text/html; charset=utf-8');
 
-        require_once $this->viewPath . '/' . $vw . '.php';
+        ob_start();
+        require_once $this->viewPath . '/' . $viewName . '.php';
+        $this->body = ob_get_clean();
     }
 
     public function header(string $key, string $value): void
     {
-        header(sprintf("%s: %s", $key, $value));
+        $this->headers[$key] = $value;
     }
 
     public function text(string $text): void
     {
         $this->header('Content-Type', 'text/plain; charset=utf-8');
-        echo $text;
+        $this->body = $text;
     }
 
     public function json(array $data): void
     {
         $this->header('Content-Type', 'application/json; charset=utf-8');
-        echo json_encode($data);
+        $this->body = json_encode($data);
     }
 }

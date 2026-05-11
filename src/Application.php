@@ -2,6 +2,8 @@
 
 namespace Lumi\LumiPHP;
 
+use Lumi\LumiPHP\Emitter\PhpResponseEmitter;
+
 class Application implements RouterInterface
 {
     private Router $router;
@@ -107,6 +109,7 @@ class Application implements RouterInterface
             $ctx->setHandlers(0, $handlers);
             try {
                 $handlers[0]($ctx);
+                PhpResponseEmitter::emit($res);
             } catch (\Throwable $e) {
                 if (is_callable($this->onErrorHandler)) {
                     ($this->onErrorHandler)($e, $ctx);
