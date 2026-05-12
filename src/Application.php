@@ -3,6 +3,7 @@
 namespace Lumi\LumiPHP;
 
 use Lumi\LumiPHP\Emitter\PhpResponseEmitter;
+use Lumi\LumiPHP\Factory\PhpRequestFactory;
 
 class Application implements RouterInterface
 {
@@ -103,7 +104,7 @@ class Application implements RouterInterface
 
         [$path, $matches, $handlers] = $this->router->match($method, $uri);
         if (is_array($handlers) && count($handlers) > 0) {
-            $req = new Request($path, $matches);
+            $req = PhpRequestFactory::fromGlobals($method, $path, $uri, $matches);
             $res = $this->res;
             $ctx = new Context($req, $res);
             $ctx->setHandlers(0, $handlers);
@@ -118,7 +119,7 @@ class Application implements RouterInterface
                 }
             }
         } else {
-            $req = new Request('', []);
+            $req = PhpRequestFactory::fromGlobals($method, '', $uri, []);
             $res = $this->res->status(404);
             $ctx = new Context($req, $res);
             if (is_callable($this->notFoundHandler)) {

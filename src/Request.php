@@ -4,15 +4,33 @@ namespace Lumi\LumiPHP;
 
 class Request
 {
+    public string $uri;
+    private array $queries;
+    private array $headers;
+    private string $rawBody;
+    private array $parseBody;
     private string $path;
     private array $matches;
     public string $method;
 
-    public function __construct(string $path, array $matches)
-    {
+    public function __construct(
+        string $path = '', 
+        array $matches = [],
+        string $method = '',
+        string $uri = '',
+        array $queries = [],
+        array $headers = [],
+        string $rawBody = '',
+        array $parseBody = []
+    ) {
         $this->path = $path;
         $this->matches = $matches;
-        $this->method = $_SERVER['REQUEST_METHOD'];
+        $this->method = $method;
+        $this->uri = $uri;
+        $this->queries = $queries;
+        $this->headers = $headers;
+        $this->rawBody = $rawBody;
+        $this->parseBody = $parseBody;
     }
 
     public function param(string $key = ''): string|array|null
@@ -25,29 +43,21 @@ class Request
 
     public function query(string $key): mixed
     {
-        return isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;
+        return isset($this->queries[$key]) ? $this->queries[$key] : null;
     }
 
     public function header(string $key): string|null
     {
-        $headers = getallheaders();
-        return isset($headers[$key]) ? $headers[$key] : null;
+        return isset($this->headers[$key]) ? $this->headers[$key] : null;
     }
 
     public function body(): array
     {
-        if ($this->method === 'POST') {
-            return $_POST;
-        }
-
-        [$post, $_] = request_parse_body();
-
-        return $post;
+        return $this->parseBody;
     }
 
     public function json(): array
     {
-        $json_data = file_get_contents('php://input');
-        return json_decode($json_data, true);
+        return json_decode($this->rawBody, true);
     }
 }
