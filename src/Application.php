@@ -116,13 +116,14 @@ class Application implements RouterInterface
             $ctx->setHandlers(0, $handlers);
             try {
                 $handlers[0]($ctx);
-                PhpResponseEmitter::emit($res);
             } catch (\Throwable $e) {
                 if (is_callable($this->onErrorHandler)) {
                     ($this->onErrorHandler)($e, $ctx);
                 } else {
-                    throw $e;
+                    $res->status(500)->text('Internal Server Error');
                 }
+            } finally {
+                PhpResponseEmitter::emit($res);
             }
         } else {
             $req = PhpRequestFactory::create($method, '', $uri, []);
