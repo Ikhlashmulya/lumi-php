@@ -1,6 +1,6 @@
 <?php
 
-namespace Lumi\LumiPHP;
+namespace Lumi\LumiPHP\Helper;
 
 class PathUtil
 {

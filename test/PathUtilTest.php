@@ -1,6 +1,6 @@
 <?php
 
-use Lumi\LumiPHP\PathUtil;
+use Lumi\LumiPHP\Helper\PathUtil;
 
 test('PathUtil gets route parameter names', function () {
     assertSameValue(

@@ -1,8 +1,8 @@
 <?php
 
-use Lumi\LumiPHP\Context;
-use Lumi\LumiPHP\Request;
-use Lumi\LumiPHP\Response;
+use Lumi\LumiPHP\Http\Context;
+use Lumi\LumiPHP\Http\Request;
+use Lumi\LumiPHP\Http\Response;
 
 function makeContext(): Context
 {

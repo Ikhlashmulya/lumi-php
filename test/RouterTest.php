@@ -1,6 +1,6 @@
 <?php
 
-use Lumi\LumiPHP\Router;
+use Lumi\LumiPHP\Routing\Router;
 
 test('Router matches a registered route and returns parameter values', function () {
     $router = new Router();

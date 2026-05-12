@@ -1,6 +1,8 @@
 <?php
 
-namespace Lumi\LumiPHP;
+namespace Lumi\LumiPHP\Routing;
+
+use Lumi\LumiPHP\Application;
 
 class RouterGroup implements RouterInterface
 {

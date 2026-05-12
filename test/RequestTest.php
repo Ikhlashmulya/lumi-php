@@ -1,6 +1,6 @@
 <?php
 
-use Lumi\LumiPHP\Request;
+use Lumi\LumiPHP\Http\Request;
 
 test('Request returns all route parameters', function () {
     $_SERVER['REQUEST_METHOD'] = 'GET';

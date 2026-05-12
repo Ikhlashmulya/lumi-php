@@ -4,6 +4,12 @@ namespace Lumi\LumiPHP;
 
 use Lumi\LumiPHP\Emitter\PhpResponseEmitter;
 use Lumi\LumiPHP\Factory\PhpRequestFactory;
+use Lumi\LumiPHP\Http\Response;
+use Lumi\LumiPHP\Http\Request;
+use Lumi\LumiPHP\Http\Context;
+use Lumi\LumiPHP\Routing\Router;
+use Lumi\LumiPHP\Routing\RouterGroup;
+use Lumi\LumiPHP\Routing\RouterInterface;
 
 class Application implements RouterInterface
 {

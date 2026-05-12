@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Lumi\LumiPHP\Application;
-use Lumi\LumiPHP\Context;
+use Lumi\LumiPHP\Http\Context;
 
 $app = new Application();
 

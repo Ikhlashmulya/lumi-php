@@ -2,7 +2,7 @@
 
 namespace Lumi\LumiPHP\Emitter;
 
-use Lumi\LumiPHP\Response;
+use Lumi\LumiPHP\Http\Response;
 
 class PhpResponseEmitter
 {

@@ -2,7 +2,7 @@
 
 namespace Lumi\LumiPHP\Factory;
 
-use Lumi\LumiPHP\Request;
+use Lumi\LumiPHP\Http\Request;
 
 class PhpRequestFactory
 {
