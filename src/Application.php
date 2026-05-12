@@ -133,6 +133,7 @@ class Application implements RouterInterface
             } else {
                 $res->text('Url Not Found');
             }
+            PhpResponseEmitter::emit($res);
         }
     }
 }
