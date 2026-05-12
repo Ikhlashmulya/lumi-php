@@ -104,7 +104,7 @@ class Application implements RouterInterface
 
         [$path, $matches, $handlers] = $this->router->match($method, $uri);
         if (is_array($handlers) && count($handlers) > 0) {
-            $req = PhpRequestFactory::fromGlobals($method, $path, $uri, $matches);
+            $req = PhpRequestFactory::create($method, $path, $uri, $matches);
             $res = $this->res;
             $ctx = new Context($req, $res);
             $ctx->setHandlers(0, $handlers);
@@ -119,7 +119,7 @@ class Application implements RouterInterface
                 }
             }
         } else {
-            $req = PhpRequestFactory::fromGlobals($method, '', $uri, []);
+            $req = PhpRequestFactory::create($method, '', $uri, []);
             $res = $this->res->status(404);
             $ctx = new Context($req, $res);
             if (is_callable($this->notFoundHandler)) {

@@ -6,36 +6,59 @@ use Lumi\LumiPHP\Request;
 
 class PhpRequestFactory
 {
-    public static function fromGlobals(string $method, string $path, string $uri, array $matches): Request
+    public static function create(string $method, string $path, string $uri, array $matches): Request
     {
-        if ($method === 'GET') {
-            return new Request(
-                path: $path,
-                uri: $uri,
-                method: $method,
-                queries: $_GET,
-                headers: getallheaders(),
-                matches: $matches
-            );
-        }
+        $method = strtoupper($method);
 
-        $parseBody = [];
-        if ($method === 'POST') {
-            $parsedBody = $_POST;
-        } else {
-            [$parsedBody, $_] = request_parse_body();
-            $parseBody = $parsedBody;
-        }
+        $parseBody = self::parseBody($method);
 
         return new Request(
             path: $path,
-            uri: $uri,
+            matches: $matches,
             method: $method,
+            uri: $uri,
             queries: $_GET,
-            headers: getallheaders(),
-            rawBody: file_get_contents('php://input'),
-            parseBody: $parseBody,
-            matches: $matches
+            headers: self::headers(),
+            rawBody: self::rawBody(),
+            parseBody: $parseBody
         );
+    }
+
+    private static function parseBody(string $method): array
+    {
+        if ($method === 'GET' || $method === 'HEAD' || ! self::hasBody()) {
+            return [];
+        }
+
+        if ($method === 'POST') {
+            return $_POST;
+        }
+
+        if (! function_exists('request_parse_body')) {
+            return [];
+        }
+
+        try {
+            [$parsedBody] = request_parse_body();
+        } catch (\Throwable) {
+            return [];
+        }
+
+        return is_array($parsedBody) ? $parsedBody : [];
+    }
+
+    private static function hasBody(): bool
+    {
+        return (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 0;
+    }
+
+    private static function headers(): array
+    {
+        return function_exists('getallheaders') ? getallheaders() : [];
+    }
+
+    private static function rawBody(): string
+    {
+        return file_get_contents('php://input') ?: '';
     }
 }
