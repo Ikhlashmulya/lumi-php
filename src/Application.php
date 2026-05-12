@@ -5,7 +5,6 @@ namespace Lumi\LumiPHP;
 use Lumi\LumiPHP\Emitter\PhpResponseEmitter;
 use Lumi\LumiPHP\Factory\PhpRequestFactory;
 use Lumi\LumiPHP\Http\Response;
-use Lumi\LumiPHP\Http\Request;
 use Lumi\LumiPHP\Http\Context;
 use Lumi\LumiPHP\Routing\Router;
 use Lumi\LumiPHP\Routing\RouterGroup;
@@ -15,7 +14,6 @@ class Application implements RouterInterface
 {
     private Router $router;
     private Response $res;
-    private array $middlewareRoutes = array();
     private mixed $notFoundHandler = null;
     private mixed $onErrorHandler = null;
 

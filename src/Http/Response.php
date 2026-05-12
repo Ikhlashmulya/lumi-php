@@ -9,7 +9,6 @@ class Response
     public array $headers = [];
     public string|false $body = '';
     public string|false $redirectUrl = false;
-    public array $viewData = [];
 
     public function setView(string $path): void
     {
