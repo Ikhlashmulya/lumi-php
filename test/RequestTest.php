@@ -3,9 +3,10 @@
 use Lumi\LumiPHP\Http\Request;
 
 test('Request returns all route parameters', function () {
-    $_SERVER['REQUEST_METHOD'] = 'GET';
-
-    $request = new Request('/users/{id}/posts/{postId}', ['42', '99']);
+    $request = new Request(
+        path: '/users/{id}/posts/{postId}',
+        matches: ['42', '99']
+    );
 
     assertSameValue(
         ['id' => '42', 'postId' => '99'],
@@ -14,23 +15,49 @@ test('Request returns all route parameters', function () {
 });
 
 test('Request returns one route parameter by key', function () {
-    $_SERVER['REQUEST_METHOD'] = 'GET';
-
-    $request = new Request('/users/{id}', ['42']);
+    $request = new Request(
+        path: '/users/{id}',
+        matches: ['42']
+    );
 
     assertSameValue('42', $request->param('id'));
     assertSameValue(null, $request->param('missing'));
 });
 
 test('Request reads query values from request data', function () {
-    $_SERVER['REQUEST_METHOD'] = 'GET';
-    $_REQUEST['page'] = '2';
-
-    $request = new Request('/users', []);
+    $request = new Request(
+        path: '/users',
+        queries: ['page' => '2']
+    );
 
     assertSameValue('2', $request->query('page'));
     assertSameValue(null, $request->query('missing'));
-
-    unset($_REQUEST['page']);
 });
 
+test('Request reads header values', function () {
+    $request = new Request(
+        path: '/users',
+        headers: ['Accept' => 'application/json']
+    );
+
+    assertSameValue('application/json', $request->header('Accept'));
+    assertSameValue(null, $request->header('Missing'));
+});
+
+test('Request reads parsed body values', function () {
+    $request = new Request(
+        path: '/users',
+        parseBody: ['name' => 'Lumi']
+    );
+
+    assertSameValue(['name' => 'Lumi'], $request->body());
+});
+
+test('Request decodes json body', function () {
+    $request = new Request(
+        path: '/users',
+        rawBody: '{"name":"Lumi"}'
+    );
+
+    assertSameValue(['name' => 'Lumi'], $request->json());
+});

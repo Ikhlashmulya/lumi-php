@@ -41,3 +41,13 @@ function assertThrows(string $expectedException, callable $callback, string $mes
     );
 }
 
+function assertStringContains(string $needle, string $haystack, string $message = ''): void
+{
+    if (! str_contains($haystack, $needle)) {
+        throw new RuntimeException(
+            ($message === '' ? 'String does not contain expected value' : $message)
+            . "\nExpected to contain: " . var_export($needle, true)
+            . "\nActual:              " . var_export($haystack, true)
+        );
+    }
+}
