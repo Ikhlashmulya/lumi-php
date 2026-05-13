@@ -35,6 +35,13 @@ class Request
         $this->parseBody = $parseBody;
     }
 
+    public function withRoute(string $path, array $matches): self
+    {
+        $this->path = $path;
+        $this->matches = $matches;
+        return $this;
+    }
+
     public function param(string $key = ''): string|array|null
     {
         $paramNames = PathUtil::getParamNames($this->path);

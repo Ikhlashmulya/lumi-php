@@ -6,15 +6,13 @@ use Lumi\LumiPHP\Http\Request;
 
 class PhpRequestFactory
 {
-    public static function create(string $method, string $path, string $uri, array $matches): Request
+    public static function create(string $method, string $uri): Request
     {
         $method = strtoupper($method);
 
         $parseBody = self::parseBody($method);
 
         return new Request(
-            path: $path,
-            matches: $matches,
             method: $method,
             uri: $uri,
             queries: $_GET,

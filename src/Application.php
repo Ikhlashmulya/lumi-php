@@ -6,6 +6,7 @@ use Lumi\LumiPHP\Emitter\PhpResponseEmitter;
 use Lumi\LumiPHP\Factory\PhpRequestFactory;
 use Lumi\LumiPHP\Http\Response;
 use Lumi\LumiPHP\Http\Context;
+use Lumi\LumiPHP\Http\Request;
 use Lumi\LumiPHP\Routing\Router;
 use Lumi\LumiPHP\Routing\RouterGroup;
 use Lumi\LumiPHP\Routing\RouterInterface;
@@ -13,14 +14,13 @@ use Lumi\LumiPHP\Routing\RouterInterface;
 class Application implements RouterInterface
 {
     private Router $router;
-    private Response $res;
     private mixed $notFoundHandler = null;
     private mixed $onErrorHandler = null;
+    private string $viewPath = '';
 
     public function __construct() 
     {
         $this->router = new Router;
-        $this->res = new Response;
     }
 
     public function get(string $path, callable ...$handler): void
@@ -65,7 +65,7 @@ class Application implements RouterInterface
 
     public function setView(string $path): void
     {
-        $this->res->setView($path);
+        $this->viewPath = $path;
     }
 
     public function use(string|callable $args1, callable ...$handlers): void
@@ -101,16 +101,30 @@ class Application implements RouterInterface
         return new RouterGroup($this, $path, ...$handlers);
     }
 
+    private function createResponse(): Response
+    {
+        $res = new Response();
+        $res->setView($this->viewPath);
+        return $res;
+    }
+
     public function run(): void
     {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $method = $_SERVER['REQUEST_METHOD'];
 
-        [$path, $matches, $handlers] = $this->router->match($method, $uri);
+        $req = PhpRequestFactory::create($method, $uri);
+        $res = $this->handle($req);
+        PhpResponseEmitter::emit($res);
+    }
+
+    public function handle(Request $req): Response
+    {
+        $res = $this->createResponse();
+
+        [$path, $matches, $handlers] = $this->router->match($req->method, $req->uri);
         if (is_array($handlers) && count($handlers) > 0) {
-            $req = PhpRequestFactory::create($method, $path, $uri, $matches);
-            $res = $this->res;
-            $ctx = new Context($req, $res);
+            $ctx = new Context($req->withRoute($path, $matches), $res);
             $ctx->setHandlers(0, $handlers);
             try {
                 $handlers[0]($ctx);
@@ -121,18 +135,16 @@ class Application implements RouterInterface
                     $res->status(500)->text('Internal Server Error');
                 }
             } finally {
-                PhpResponseEmitter::emit($res);
+                return $res;
             }
         } else {
-            $req = PhpRequestFactory::create($method, '', $uri, []);
-            $res = $this->res->status(404);
-            $ctx = new Context($req, $res);
+            $ctx = new Context($req, $res->status(404));
             if (is_callable($this->notFoundHandler)) {
                 ($this->notFoundHandler)($ctx);
             } else {
                 $res->text('Url Not Found');
             }
-            PhpResponseEmitter::emit($res);
+            return $res;
         }
     }
 }
