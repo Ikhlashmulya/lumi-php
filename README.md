@@ -284,7 +284,7 @@ $res = $app->handle(new Request(
 
 assert($res->statusCode === 200);
 assert($res->body === '...');
-
+```
 
 ## TODO
 
