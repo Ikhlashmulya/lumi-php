@@ -32,7 +32,7 @@ php -S localhost:9000 test/application-test.php
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Lumi\LumiPHP\Application;
-use Lumi\LumiPHP\Context;
+use Lumi\LumiPHP\Http\Context;
 
 $app = new Application();
 
@@ -272,17 +272,21 @@ $app->onError(function (Throwable $error, Context $ctx) {
 });
 ```
 
+## Testing Applications
+
+Use `handle()` to test routes without starting a PHP server:
+
+```php
+$res = $app->handle(new Request(
+    method: 'GET',
+    uri: '/users/42'
+));
+
+assert($res->statusCode === 200);
+assert($res->body === '...');
+
+
 ## TODO
-
-- Make `Response` easier to inspect in tests:
-    - Store status code, headers, and body internally
-    - Keep response sending separate from response building
-
-- Testing utility:
-
-    ```php
-    $response = $app->test('GET', '/users/1');
-    ```
 
 - Built-in middleware:
     - CORS middleware
