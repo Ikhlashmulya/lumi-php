@@ -29,6 +29,10 @@ class Response
 
     public function view(string $viewName, array $data = array()): void
     {
+        if ($this->viewPath === '') {
+            throw new \RuntimeException('View path is not set');
+        }
+
         $_ = $data;
         unset($data);
 
