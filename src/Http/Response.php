@@ -39,7 +39,7 @@ class Response
         $this->header('Content-Type', 'text/html; charset=utf-8');
 
         ob_start();
-        require_once $this->viewPath . '/' . $viewName . '.php';
+        require $this->viewPath . '/' . $viewName . '.php';
         $this->body = ob_get_clean();
     }
 
