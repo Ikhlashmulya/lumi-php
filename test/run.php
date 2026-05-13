@@ -10,6 +10,7 @@ require_once __DIR__ . '/RouterTest.php';
 require_once __DIR__ . '/RequestTest.php';
 require_once __DIR__ . '/ResponseTest.php';
 require_once __DIR__ . '/ContextTest.php';
+require_once __DIR__ . '/ApplicationTest.php';
 
 $passed = 0;
 
