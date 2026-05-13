@@ -1,3 +1,15 @@
+v 0.3.0
+- move HTTP request, response, and context classes under the Http namespace
+- move routing classes under the Routing namespace
+- add Application handle() flow that accepts a Request and returns a Response
+- update request factory to create requests without route match data
+- add Request withRoute() for attaching route path and matches after routing
+- create fresh Response instances per handled request and pass configured view path into them
+- fix view rendering to use require instead of require_once so templates can render multiple times in one PHP process
+- add application unit tests for route handling, middleware, request data, not found responses, error handling, view rendering, and route groups
+- add response unit tests and string contains test assertion helper
+- update README documentation
+
 v 0.2.0
 - add route group support with shared path prefixes and group middleware
 - add custom not found handler support
