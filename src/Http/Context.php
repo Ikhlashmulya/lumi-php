@@ -53,4 +53,36 @@ class Context
     {
         return $this->context[$key];
     }
+
+    public function status(int $code): self
+    {
+        $this->res->status($code);
+        return $this;
+    }
+
+    public function header(string $key, string $value): self
+    {
+        $this->res->header($key, $value);
+        return $this;
+    }
+
+    public function text(string $text): void
+    {
+        $this->res->text($text);
+    }
+
+    public function json(array $data): void
+    {
+        $this->res->json($data);
+    }
+
+    public function redirect(string $url): void
+    {
+        $this->res->redirect($url);
+    }
+
+    public function view(string $viewName, array $data = array()): void
+    {
+        $this->res->view($viewName, $data);
+    }
 }
