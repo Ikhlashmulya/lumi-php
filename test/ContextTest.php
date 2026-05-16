@@ -52,3 +52,27 @@ test('Context throws when next is called multiple times from one handler', funct
     assertThrows(RuntimeException::class, fn () => $handler($context));
 });
 
+test('Context response shortcuts write to the response', function () {
+    $context = makeContext();
+
+    $returned = $context
+        ->status(201)
+        ->header('X-Test', 'Lumi');
+
+    $context->json(['message' => 'Created']);
+
+    assertSameValue($context, $returned);
+    assertSameValue(201, $context->res->statusCode);
+    assertSameValue('Lumi', $context->res->headers['X-Test']);
+    assertSameValue('application/json; charset=utf-8', $context->res->headers['Content-Type']);
+    assertSameValue('{"message":"Created"}', $context->res->body);
+});
+
+test('Context redirect shortcut writes to the response', function () {
+    $context = makeContext();
+
+    $context->redirect('/login');
+
+    assertSameValue(302, $context->res->statusCode);
+    assertSameValue('/login', $context->res->redirectUrl);
+});
