@@ -12,13 +12,16 @@ class PhpRequestFactory
 
         $parseBody = self::parseBody($method);
 
+        $fileResolver = fn () => UploadedFileFactory::fromGlobals();
+
         return new Request(
             method: $method,
             uri: $uri,
             queries: $_GET,
             headers: self::headers(),
             rawBody: self::rawBody(),
-            parseBody: $parseBody
+            parseBody: $parseBody,
+            fileResolver: $fileResolver
         );
     }
 

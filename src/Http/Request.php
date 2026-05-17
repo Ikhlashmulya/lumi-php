@@ -13,6 +13,8 @@ class Request
     private array $parseBody;
     private string $path;
     private array $matches;
+    private mixed $fileResolver;
+    private ?array $files = null;
     public string $method;
 
     public function __construct(
@@ -23,7 +25,8 @@ class Request
         array $queries = [],
         array $headers = [],
         string $rawBody = '',
-        array $parseBody = []
+        array $parseBody = [],
+        mixed $fileResolver = null
     ) {
         $this->path = $path;
         $this->matches = $matches;
@@ -33,6 +36,7 @@ class Request
         $this->headers = $headers;
         $this->rawBody = $rawBody;
         $this->parseBody = $parseBody;
+        $this->fileResolver = $fileResolver;
     }
 
     public function withRoute(string $path, array $matches): self
@@ -68,5 +72,21 @@ class Request
     public function json(): array
     {
         return json_decode($this->rawBody, true);
+    }
+
+    public function files(): array
+    {
+        if ($this->files === null) {
+            $files = is_callable($this->fileResolver) ? ($this->fileResolver)() : [];
+            $this->files = $files;
+        }
+
+        return $this->files;
+    }
+
+    public function file(string $key): array|UploadedFile|null
+    {
+        $files = $this->files();
+        return isset($files[$key]) ? $files[$key] : null;
     }
 }
