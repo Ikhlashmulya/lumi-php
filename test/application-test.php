@@ -61,6 +61,22 @@ $app->patch('/test/body', $testMiddleware, function (Context $ctx) {
     $ctx->res->json($body);
 });
 
+$app->post('/test/file', $testMiddleware, function (Context $ctx) {
+    $file = $ctx->req->file('photo');
+    $file->store('.');
+
+    $ctx->json(['message' => "file {$file->getName()} uploaded"]);
+});
+
+$app->post('/test/files', $testMiddleware, function (Context $ctx) {
+    $files = $ctx->req->file('files');
+    foreach ($files as $file) {
+        $file->store('.');
+    }
+
+    $ctx->json(['message' => "file uploaded"]);
+});
+
 $app->onError(function (\Throwable $e, Context $ctx) {
     $ctx->res->status(500)->json([
         'message' => $e->getMessage()

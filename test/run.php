@@ -11,6 +11,7 @@ require_once __DIR__ . '/RequestTest.php';
 require_once __DIR__ . '/ResponseTest.php';
 require_once __DIR__ . '/ContextTest.php';
 require_once __DIR__ . '/ApplicationTest.php';
+require_once __DIR__ . '/UploadedFileTest.php';
 
 $passed = 0;
 
