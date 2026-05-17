@@ -37,7 +37,7 @@ use Lumi\LumiPHP\Http\Context;
 $app = new Application();
 
 $app->get('/', function (Context $ctx) {
-    $ctx->res->text('Hello World');
+    $ctx->text('Hello World');
 });
 
 $app->run();
@@ -64,7 +64,7 @@ Route parameters can be read from the request object:
 $app->get('/users/{id}', function (Context $ctx) {
     $id = $ctx->req->param('id');
 
-    $ctx->res->text("User ID: $id");
+    $ctx->text("User ID: $id");
 });
 ```
 
@@ -82,7 +82,7 @@ Group routes under a shared path prefix:
 $api = $app->group('/api');
 
 $api->get('/users', function (Context $ctx) {
-    $ctx->res->json([
+    $ctx->json([
         'users' => [],
     ]);
 });
@@ -97,7 +97,7 @@ $admin = $app->group('/admin', function (Context $ctx) {
 });
 
 $admin->get('/dashboard', function (Context $ctx) {
-    $ctx->res->text('Admin dashboard');
+    $ctx->text('Admin dashboard');
 });
 ```
 
@@ -123,7 +123,7 @@ $app->use('/users', function (Context $ctx) {
 $app->get('/users/{id}', function (Context $ctx) {
     $scope = $ctx->get('scope');
 
-    $ctx->res->text("Matched scope: $scope");
+    $ctx->text("Matched scope: $scope");
 });
 ```
 
@@ -135,7 +135,7 @@ Handlers receive a `Context` instance:
 $app->get('/hello', function (Context $ctx) {
     $ctx->set('name', 'Lumi');
 
-    $ctx->res->text('Hello ' . $ctx->get('name'));
+    $ctx->text('Hello ' . $ctx->get('name'));
 });
 ```
 
@@ -152,6 +152,12 @@ Available context methods:
 $ctx->next();
 $ctx->set('key', 'value');
 $ctx->get('key');
+$ctx->status(201);
+$ctx->header('X-App', 'Lumi');
+$ctx->text('Hello World');
+$ctx->json(['message' => 'Hello World']);
+$ctx->redirect('/login');
+$ctx->view('index', ['name' => 'Lumi']);
 ```
 
 ## Request
@@ -186,18 +192,68 @@ Read form request body:
 $data = $ctx->req->body();
 ```
 
+Read uploaded files:
+
+```php
+$file = $ctx->req->file('avatar');
+$files = $ctx->req->files();
+```
+
+Move an uploaded file to a specific path:
+
+```php
+$file = $ctx->req->file('avatar');
+
+if ($file !== null && $file->isValid()) {
+    $file->moveTo(__DIR__ . '/uploads/' . $file->getName());
+}
+```
+
+Store an uploaded file in a directory:
+
+```php
+$file = $ctx->req->file('avatar');
+
+if ($file !== null && $file->isValid()) {
+    $file->store(__DIR__ . '/uploads');
+}
+```
+
+Store an uploaded file with a new filename while keeping the original extension:
+
+```php
+$file = $ctx->req->file('avatar');
+
+if ($file !== null && $file->isValid()) {
+    $file->store(__DIR__ . '/uploads', 'profile-picture');
+}
+```
+
+Uploaded file helpers:
+
+```php
+$file->getName();
+$file->getTmpName();
+$file->getType();
+$file->getSize();
+$file->getError();
+$file->isValid();
+$file->moveTo($path);
+$file->store($dir, $newName = '');
+```
+
 ## Response
 
 Send plain text:
 
 ```php
-$ctx->res->text('Hello World');
+$ctx->text('Hello World');
 ```
 
 Send JSON:
 
 ```php
-$ctx->res->json([
+$ctx->json([
     'message' => 'Hello World',
 ]);
 ```
@@ -205,21 +261,27 @@ $ctx->res->json([
 Set a response header:
 
 ```php
-$ctx->res->header('X-App', 'Lumi');
+$ctx->header('X-App', 'Lumi');
 ```
 
 Redirect to another URL:
 
 ```php
-$ctx->res->redirect('/login');
+$ctx->redirect('/login');
 ```
 
 Set a status code:
 
 ```php
-$ctx->res->status(201)->json([
+$ctx->status(201)->json([
     'message' => 'Created',
 ]);
+```
+
+The response object is still available directly:
+
+```php
+$ctx->res->status(204);
 ```
 
 ## Views
@@ -233,7 +295,7 @@ $app->setView(__DIR__ . '/views');
 Render a PHP view file:
 
 ```php
-$ctx->res->view('index', [
+$ctx->view('index', [
     'name' => 'Lumi',
 ]);
 ```
@@ -256,7 +318,7 @@ Customize the 404 response:
 
 ```php
 $app->notFound(function (Context $ctx) {
-    $ctx->res->status(404)->json([
+    $ctx->status(404)->json([
         'message' => 'Not found',
     ]);
 });
@@ -266,7 +328,7 @@ Handle uncaught errors from route handlers and middleware:
 
 ```php
 $app->onError(function (Throwable $error, Context $ctx) {
-    $ctx->res->status(500)->json([
+    $ctx->status(500)->json([
         'message' => 'Internal server error',
     ]);
 });
@@ -277,6 +339,8 @@ $app->onError(function (Throwable $error, Context $ctx) {
 Use `handle()` to test routes without starting a PHP server:
 
 ```php
+use Lumi\LumiPHP\Http\Request;
+
 $res = $app->handle(new Request(
     method: 'GET',
     uri: '/users/42'
@@ -288,18 +352,13 @@ assert($res->body === '...');
 
 ## TODO
 
+- Add feature for handle cookie
+
 - Built-in middleware:
     - CORS middleware
     - request logger middleware
     - JSON body parser middleware
     - static file middleware
-
-- File upload request helpers:
-
-    ```php
-    $file = $ctx->req->file('avatar');
-    $files = $ctx->req->files();
-    ```
 
 - Route helpers for all methods:
 
