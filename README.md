@@ -352,14 +352,30 @@ assert($res->body === '...');
 
 ## TODO
 
-- Add feature for handle cookie
+- Session and cookie helpers
+- Safe error handling with debug mode
+- Logger
 
 - Built-in middleware:
+    - CSRF middleware
+    - Request ID middleware
     - CORS middleware
     - request logger middleware
     - JSON body parser middleware
     - static file middleware
 
+- Middleware priority and execution order documentation
+
+Under consideration:
+
+- Config and environment support
+- Request validation
+- HTTP status response helpers
+- Trusted proxy and real IP handling
+- Content negotiation and Accept header helpers
+- Response download and file response helpers
+- Route naming and URL generation
+- Simple dependency injection container
 - Route helpers for all methods:
 
     ```php
@@ -382,5 +398,3 @@ assert($res->body === '...');
 
     $v1->get('/users', $handler);
     ```
-
-- Simple dependency injection container. (priority: low)
