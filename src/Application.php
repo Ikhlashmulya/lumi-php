@@ -14,7 +14,7 @@ use Lumi\LumiPHP\Routing\RouterInterface;
 class Application implements RouterInterface
 {
     private Router $router;
-    private mixed $notFoundHandler = null;
+    private mixed $onNotFoundHandler = null;
     private mixed $onErrorHandler = null;
     private string $viewPath = '';
 
@@ -86,9 +86,9 @@ class Application implements RouterInterface
         $this->router->addMiddleware($path, ...$handlerList);
     }
 
-    public function notFound(callable $handler): void
+    public function onNotFound(callable $handler): void
     {
-        $this->notFoundHandler = $handler;
+        $this->onNotFoundHandler = $handler;
     }
 
     public function onError(callable $handler): void
@@ -139,8 +139,8 @@ class Application implements RouterInterface
             }
         } else {
             $ctx = new Context($req, $res->status(404));
-            if (is_callable($this->notFoundHandler)) {
-                ($this->notFoundHandler)($ctx);
+            if (is_callable($this->onNotFoundHandler)) {
+                ($this->onNotFoundHandler)($ctx);
             } else {
                 $res->text('Url Not Found');
             }

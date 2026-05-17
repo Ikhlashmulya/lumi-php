@@ -83,7 +83,7 @@ $app->onError(function (\Throwable $e, Context $ctx) {
     ]);
 });
 
-$app->notFound(function (Context $ctx) {
+$app->onNotFound(function (Context $ctx) {
     $ctx->res->json([
         'message' => 'Resource Not Found'
     ]);
