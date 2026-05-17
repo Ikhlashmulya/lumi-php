@@ -1,3 +1,12 @@
+v 0.4.0
+- add Context response shortcuts for status, header, text, json, redirect, and view responses
+- add uploaded file support with UploadedFile and UploadedFileFactory
+- add lazy request file resolving through Request file() and files()
+- add uploaded file helpers for metadata, validation, moving, and storing files
+- update PHP request factory to provide uploaded files through a lazy resolver
+- add unit tests for context response shortcuts and uploaded file handling
+- update sample application and README documentation for context shortcuts and file uploads
+
 v 0.3.0
 - move HTTP request, response, and context classes under the Http namespace
 - move routing classes under the Routing namespace
