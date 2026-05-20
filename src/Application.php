@@ -127,10 +127,16 @@ class Application implements RouterInterface
             $ctx = new Context($req->withRoute($path, $matches), $res);
             $ctx->setHandlers(0, $handlers);
             try {
-                $handlers[0]($ctx);
+                $result = $handlers[0]($ctx);
+                if ($result instanceof Response) {
+                    $res = $result;
+                }
             } catch (\Throwable $e) {
                 if (is_callable($this->onErrorHandler)) {
-                    ($this->onErrorHandler)($e, $ctx);
+                    $result = ($this->onErrorHandler)($e, $ctx);
+                    if ($result instanceof Response) {
+                        $res = $result;
+                    }
                 } else {
                     $res->status(500)->text('Internal Server Error');
                 }
@@ -140,7 +146,10 @@ class Application implements RouterInterface
         } else {
             $ctx = new Context($req, $res->status(404));
             if (is_callable($this->onNotFoundHandler)) {
-                ($this->onNotFoundHandler)($ctx);
+                $result = ($this->onNotFoundHandler)($ctx);
+                if ($result instanceof Response) {
+                    $res = $result;
+                }
             } else {
                 $res->text('Url Not Found');
             }

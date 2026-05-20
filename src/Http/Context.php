@@ -23,7 +23,7 @@ class Context
         $this->handlers = $handlers;
     }
 
-    public function next(): void
+    public function next(): mixed
     {
         $currentIdx = $this->idxHandler;
 
@@ -37,8 +37,10 @@ class Context
 
         try {
             if (isset($this->handlers[$this->idxHandler])) {
-                ($this->handlers[$this->idxHandler])($this);
+                return ($this->handlers[$this->idxHandler])($this);
             }
+
+            return null;
         } finally {
             $this->idxHandler = $currentIdx;
         }
@@ -66,23 +68,27 @@ class Context
         return $this;
     }
 
-    public function text(string $text): void
+    public function text(string $text): Response
     {
         $this->res->text($text);
+        return $this->res;
     }
 
-    public function json(array $data): void
+    public function json(array $data): Response
     {
         $this->res->json($data);
+        return $this->res;
     }
 
-    public function redirect(string $url): void
+    public function redirect(string $url): Response
     {
         $this->res->redirect($url);
+        return $this->res;
     }
 
-    public function view(string $viewName, array $data = array()): void
+    public function view(string $viewName, array $data = array()): Response
     {
         $this->res->view($viewName, $data);
+        return $this->res;
     }
 }
