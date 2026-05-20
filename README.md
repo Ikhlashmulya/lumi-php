@@ -37,7 +37,7 @@ use Lumi\LumiPHP\Http\Context;
 $app = new Application();
 
 $app->get('/', function (Context $ctx) {
-    $ctx->text('Hello World');
+    return $ctx->text('Hello World');
 });
 
 $app->run();
@@ -64,7 +64,7 @@ Route parameters can be read from the request object:
 $app->get('/users/{id}', function (Context $ctx) {
     $id = $ctx->req->param('id');
 
-    $ctx->text("User ID: $id");
+    return $ctx->text("User ID: $id");
 });
 ```
 
@@ -82,7 +82,7 @@ Group routes under a shared path prefix:
 $api = $app->group('/api');
 
 $api->get('/users', function (Context $ctx) {
-    $ctx->json([
+    return $ctx->json([
         'users' => [],
     ]);
 });
@@ -93,11 +93,11 @@ Groups can also receive middleware:
 ```php
 $admin = $app->group('/admin', function (Context $ctx) {
     $ctx->set('area', 'admin');
-    $ctx->next();
+    return $ctx->next();
 });
 
 $admin->get('/dashboard', function (Context $ctx) {
-    $ctx->text('Admin dashboard');
+    return $ctx->text('Admin dashboard');
 });
 ```
 
@@ -108,7 +108,7 @@ Global middleware runs before matched route handlers:
 ```php
 $app->use(function (Context $ctx) {
     $ctx->set('fromMiddleware', 'global');
-    $ctx->next();
+    return $ctx->next();
 });
 ```
 
@@ -117,13 +117,13 @@ Path-scoped middleware only runs when the request URI matches the prefix:
 ```php
 $app->use('/users', function (Context $ctx) {
     $ctx->set('scope', 'users');
-    $ctx->next();
+    return $ctx->next();
 });
 
 $app->get('/users/{id}', function (Context $ctx) {
     $scope = $ctx->get('scope');
 
-    $ctx->text("Matched scope: $scope");
+    return $ctx->text("Matched scope: $scope");
 });
 ```
 
@@ -135,7 +135,7 @@ Handlers receive a `Context` instance:
 $app->get('/hello', function (Context $ctx) {
     $ctx->set('name', 'Lumi');
 
-    $ctx->text('Hello ' . $ctx->get('name'));
+    return $ctx->text('Hello ' . $ctx->get('name'));
 });
 ```
 
@@ -158,6 +158,16 @@ $ctx->text('Hello World');
 $ctx->json(['message' => 'Hello World']);
 $ctx->redirect('/login');
 $ctx->view('index', ['name' => 'Lumi']);
+```
+
+Response shortcut methods such as `text()`, `json()`, `redirect()`, and `view()` return the response, so handlers can return them directly:
+
+```php
+$app->get('/health', function (Context $ctx) {
+    return $ctx->json([
+        'status' => 'ok',
+    ]);
+});
 ```
 
 ## Request
@@ -247,13 +257,13 @@ $file->store($dir, $newName = '');
 Send plain text:
 
 ```php
-$ctx->text('Hello World');
+return $ctx->text('Hello World');
 ```
 
 Send JSON:
 
 ```php
-$ctx->json([
+return $ctx->json([
     'message' => 'Hello World',
 ]);
 ```
@@ -267,13 +277,13 @@ $ctx->header('X-App', 'Lumi');
 Redirect to another URL:
 
 ```php
-$ctx->redirect('/login');
+return $ctx->redirect('/login');
 ```
 
 Set a status code:
 
 ```php
-$ctx->status(201)->json([
+return $ctx->status(201)->json([
     'message' => 'Created',
 ]);
 ```
@@ -295,7 +305,7 @@ $app->setView(__DIR__ . '/views');
 Render a PHP view file:
 
 ```php
-$ctx->view('index', [
+return $ctx->view('index', [
     'name' => 'Lumi',
 ]);
 ```
@@ -317,8 +327,8 @@ View data is available through the `$_` variable:
 Customize the 404 response:
 
 ```php
-$app->notFound(function (Context $ctx) {
-    $ctx->status(404)->json([
+$app->onNotFound(function (Context $ctx) {
+    return $ctx->status(404)->json([
         'message' => 'Not found',
     ]);
 });
@@ -328,7 +338,7 @@ Handle uncaught errors from route handlers and middleware:
 
 ```php
 $app->onError(function (Throwable $error, Context $ctx) {
-    $ctx->status(500)->json([
+    return $ctx->status(500)->json([
         'message' => 'Internal server error',
     ]);
 });
