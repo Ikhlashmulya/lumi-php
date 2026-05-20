@@ -18,7 +18,7 @@ function makeRequest(string $method, string $uri, array $queries = [], array $bo
 test('Application returns text response from matching route', function () {
     $app = new Application();
     $app->get('/', function (Context $ctx) {
-        $ctx->res->text('Hello World');
+        return $ctx->text('Hello World');
     });
 
     $res = $app->handle(makeRequest('GET', '/'));
@@ -31,7 +31,7 @@ test('Application returns text response from matching route', function () {
 test('Application returns route parameters to handlers', function () {
     $app = new Application();
     $app->get('/users/{id}', function (Context $ctx) {
-        $ctx->res->text('User ' . $ctx->req->param('id'));
+        return $ctx->text('User ' . $ctx->req->param('id'));
     });
 
     $res = $app->handle(makeRequest('GET', '/users/42'));
@@ -42,7 +42,7 @@ test('Application returns route parameters to handlers', function () {
 test('Application returns query values to handlers', function () {
     $app = new Application();
     $app->get('/search', function (Context $ctx) {
-        $ctx->res->text('Page ' . $ctx->req->query('page'));
+        return $ctx->text('Page ' . $ctx->req->query('page'));
     });
 
     $res = $app->handle(makeRequest('GET', '/search', ['page' => '2']));
@@ -55,7 +55,7 @@ test('Application returns parsed body values to handlers', function () {
     $app->post('/users', function (Context $ctx) {
         $body = $ctx->req->body();
 
-        $ctx->res->json(['name' => $body['name']]);
+        return $ctx->json(['name' => $body['name']]);
     });
 
     $res = $app->handle(makeRequest('POST', '/users', body: ['name' => 'Lumi']));
@@ -69,7 +69,7 @@ test('Application returns json request body to handlers', function () {
     $app->post('/users/json', function (Context $ctx) {
         $data = $ctx->req->json();
 
-        $ctx->res->text($data['name']);
+        return $ctx->text($data['name']);
     });
 
     $res = $app->handle(makeRequest('POST', '/users/json', rawBody: '{"name":"Lumi"}'));
@@ -81,10 +81,10 @@ test('Application runs middleware before route handler', function () {
     $app = new Application();
     $app->use(function (Context $ctx) {
         $ctx->set('name', 'Lumi');
-        $ctx->next();
+        return $ctx->next();
     });
     $app->get('/', function (Context $ctx) {
-        $ctx->res->text('Hello ' . $ctx->get('name'));
+        return $ctx->text('Hello ' . $ctx->get('name'));
     });
 
     $res = $app->handle(makeRequest('GET', '/'));
@@ -95,10 +95,10 @@ test('Application runs middleware before route handler', function () {
 test('Application only runs middleware for matching path prefix', function () {
     $app = new Application();
     $app->use('/admin', function (Context $ctx) {
-        $ctx->res->text('Admin middleware');
+        return $ctx->text('Admin middleware');
     });
     $app->get('/users', function (Context $ctx) {
-        $ctx->res->text('Users route');
+        return $ctx->text('Users route');
     });
 
     $res = $app->handle(makeRequest('GET', '/users'));
@@ -118,8 +118,8 @@ test('Application returns default not found response', function () {
 
 test('Application uses custom not found handler', function () {
     $app = new Application();
-    $app->notFound(function (Context $ctx) {
-        $ctx->res->json(['error' => 'missing']);
+    $app->onNotFound(function (Context $ctx) {
+        return $ctx->json(['error' => 'missing']);
     });
 
     $res = $app->handle(makeRequest('GET', '/missing'));
@@ -145,7 +145,7 @@ test('Application returns default error response when handler throws', function 
 test('Application uses custom error handler when handler throws', function () {
     $app = new Application();
     $app->onError(function (Throwable $e, Context $ctx) {
-        $ctx->res->status(500)->json(['error' => $e->getMessage()]);
+        return $ctx->status(500)->json(['error' => $e->getMessage()]);
     });
     $app->get('/', function () {
         throw new RuntimeException('Boom');
@@ -162,7 +162,7 @@ test('Application passes view path to response', function () {
     $app = new Application();
     $app->setView(__DIR__ . '/views');
     $app->get('/', function (Context $ctx) {
-        $ctx->res->view('index', ['name' => 'Lumi']);
+        return $ctx->view('index', ['name' => 'Lumi']);
     });
 
     $res = $app->handle(makeRequest('GET', '/'));
@@ -175,13 +175,31 @@ test('Application matches routes inside groups', function () {
     $app = new Application();
     $admin = $app->group('/admin', function (Context $ctx) {
         $ctx->set('role', 'admin');
-        $ctx->next();
+        return $ctx->next();
     });
     $admin->get('/dashboard', function (Context $ctx) {
-        $ctx->res->text('Hello ' . $ctx->get('role'));
+        return $ctx->text('Hello ' . $ctx->get('role'));
     });
 
     $res = $app->handle(makeRequest('GET', '/admin/dashboard'));
 
     assertSameValue('Hello admin', $res->body);
+});
+
+test('Application allows middleware to run actions after next and return the response', function () {
+    $app = new Application();
+    $app->use(function (Context $ctx) {
+        $result = $ctx->next();
+        $ctx->header('X-After-Middleware', 'yes');
+
+        return $result;
+    });
+    $app->get('/', function (Context $ctx) {
+        return $ctx->text('Hello');
+    });
+
+    $res = $app->handle(makeRequest('GET', '/'));
+
+    assertSameValue('Hello', $res->body);
+    assertSameValue('yes', $res->headers['X-After-Middleware']);
 });

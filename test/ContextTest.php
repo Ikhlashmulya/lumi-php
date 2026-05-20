@@ -40,6 +40,23 @@ test('Context next runs the next handler in order', function () {
     assertSameValue(['first-before', 'second', 'first-after'], $calls);
 });
 
+test('Context next returns the next handler result', function () {
+    $context = makeContext();
+    $response = new Response();
+
+    $first = function (Context $ctx) {
+        return $ctx->next();
+    };
+
+    $second = function () use ($response) {
+        return $response;
+    };
+
+    $context->setHandlers(0, [$first, $second]);
+
+    assertSameValue($response, $first($context));
+});
+
 test('Context throws when next is called multiple times from one handler', function () {
     $context = makeContext();
     $handler = function (Context $ctx) {
@@ -59,9 +76,10 @@ test('Context response shortcuts write to the response', function () {
         ->status(201)
         ->header('X-Test', 'Lumi');
 
-    $context->json(['message' => 'Created']);
+    $response = $context->json(['message' => 'Created']);
 
     assertSameValue($context, $returned);
+    assertSameValue($context->res, $response);
     assertSameValue(201, $context->res->statusCode);
     assertSameValue('Lumi', $context->res->headers['X-Test']);
     assertSameValue('application/json; charset=utf-8', $context->res->headers['Content-Type']);
@@ -71,8 +89,9 @@ test('Context response shortcuts write to the response', function () {
 test('Context redirect shortcut writes to the response', function () {
     $context = makeContext();
 
-    $context->redirect('/login');
+    $response = $context->redirect('/login');
 
+    assertSameValue($context->res, $response);
     assertSameValue(302, $context->res->statusCode);
     assertSameValue('/login', $context->res->redirectUrl);
 });
