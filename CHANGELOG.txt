@@ -1,3 +1,10 @@
+v 0.5.0
+- rename notFound() to onNotFound() for consistency with onError()
+- support returning Response instances from route handlers, middleware, onNotFound handlers, and onError handlers
+- update Context next() to return the next handler result
+- update tests to cover returned responses from handlers and middleware after-next behavior
+- update README examples to use returned responses and onNotFound()
+
 v 0.4.0
 - add Context response shortcuts for status, header, text, json, redirect, and view responses
 - add uploaded file support with UploadedFile and UploadedFileFactory
