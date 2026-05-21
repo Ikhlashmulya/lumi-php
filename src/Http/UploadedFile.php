@@ -64,8 +64,8 @@ class UploadedFile
             throw new \RuntimeException('Directory does not exist');
         }
 
-        $extention = strtolower(pathinfo($this->name, PATHINFO_EXTENSION));
-        $path = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ($newName === '' ? basename($this->name) : $newName . '.' . $extention);
+        $extension = strtolower(pathinfo($this->name, PATHINFO_EXTENSION));
+        $path = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ($newName === '' ? basename($this->name) : $newName . '.' . $extension);
 
         return $this->moveTo($path);
     }
