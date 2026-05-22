@@ -55,3 +55,12 @@ test('Response renders views with data', function () {
     assertSameValue('text/html; charset=utf-8', $response->headers['Content-Type']);
     assertStringContains('<h2>author Lumi</h2>', $response->body);
 });
+
+test('Response throws exception when view file does not exist', function () {
+    $response = new Response();
+    $response->setView(__DIR__ . '/views');
+
+    assertThrows(\RuntimeException::class, function () use ($response) {
+        $response->view('nonexistent_view_file');
+    });
+});

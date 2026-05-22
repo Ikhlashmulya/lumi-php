@@ -33,13 +33,18 @@ class Response
             throw new \RuntimeException('View path is not set');
         }
 
+        $file = $this->viewPath . '/' . $viewName . '.php';
+        if (!file_exists($file)) {
+            throw new \RuntimeException('View file not found: ' . $viewName);
+        }
+
         $_ = $data;
         unset($data);
 
         $this->header('Content-Type', 'text/html; charset=utf-8');
 
         ob_start();
-        require $this->viewPath . '/' . $viewName . '.php';
+        require $file;
         $this->body = ob_get_clean();
     }
 
