@@ -27,19 +27,18 @@ class Response
         $this->redirectUrl = $url;
     }
 
-    public function view(string $viewName, array $data = array()): void
+    public function view(string $__file, array $__data = array()): void
     {
         if ($this->viewPath === '') {
             throw new \RuntimeException('View path is not set');
         }
 
-        $file = $this->viewPath . '/' . $viewName . '.php';
+        $file = $this->viewPath . '/' . $__file . '.php';
         if (!file_exists($file)) {
-            throw new \RuntimeException('View file not found: ' . $viewName);
+            throw new \RuntimeException('View file not found: ' . $__file);
         }
 
-        $_ = $data;
-        unset($data);
+        extract($__data, EXTR_SKIP);
 
         $this->header('Content-Type', 'text/html; charset=utf-8');
 

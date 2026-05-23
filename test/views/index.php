@@ -7,6 +7,6 @@
 </head>
 <body>
     <h1>Hello World</h1>
-    <h2>author <?= $_['name'] ?></h2>
+    <h2>author <?= $name ?></h2>
 </body>
 </html>
