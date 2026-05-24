@@ -21,7 +21,8 @@ class PhpRequestFactory
             headers: self::headers(),
             rawBody: self::rawBody(),
             parseBody: $parseBody,
-            fileResolver: $fileResolver
+            fileResolver: $fileResolver,
+            cookies: self::cookies(),
         );
     }
 
@@ -61,5 +62,14 @@ class PhpRequestFactory
     private static function rawBody(): string
     {
         return file_get_contents('php://input') ?: '';
+    }
+
+    private static function cookies(): array
+    {
+        $cookies = [];
+        foreach ($_COOKIE as $key => $value) {
+            $cookies[$key] = $value;
+        }
+        return $cookies;
     }
 }
