@@ -61,3 +61,12 @@ test('Request decodes json body', function () {
 
     assertSameValue(['name' => 'Lumi'], $request->json());
 });
+
+test('Request reads cookies', function () {
+    $request = new Request(
+        cookies: ['token' => '123']
+    );
+
+    assertSameValue('123', $request->cookie('token'));
+    assertSameValue(null, $request->cookie('missing'));
+});

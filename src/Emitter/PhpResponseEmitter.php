@@ -13,6 +13,18 @@ class PhpResponseEmitter
         foreach ($res->headers as $key => $value) {
             header(sprintf("%s: %s", $key, $value));
         };
+    
+        foreach ($res->cookies as $cookie) {
+            setcookie(
+                $cookie->name,
+                $cookie->value,
+                $cookie->expires,
+                $cookie->path,
+                $cookie->domain,
+                $cookie->secure,
+                $cookie->httpOnly,
+            );
+        }
 
         if ($res->redirectUrl !== false) {
             header("Location: " . $res->redirectUrl);

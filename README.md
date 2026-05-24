@@ -127,6 +127,66 @@ $app->get('/users/{id}', function (Context $ctx) {
 });
 ```
 
+### Middleware Execution Order
+
+Matching middleware runs in the order it was registered, then the matched route handler runs last.
+
+For a typical setup:
+
+```php
+$app->use(function (Context $ctx) {
+    $ctx->set('global', true);
+    return $ctx->next();
+});
+
+$admin = $app->group('/admin', function (Context $ctx) {
+    $ctx->set('admin', true);
+    return $ctx->next();
+});
+
+$admin->get('/dashboard', function (Context $ctx) {
+    return $ctx->text('Admin dashboard');
+});
+```
+
+A request to `/admin/dashboard` runs in this order:
+
+```text
+global middleware
+admin group middleware
+route handler
+```
+
+Middleware registered after a group is created will run after that group middleware if it also matches the request path:
+
+```php
+$admin = $app->group('/admin', $adminMiddleware);
+
+$app->use('/admin', $auditMiddleware);
+
+$admin->get('/dashboard', $handler);
+```
+
+Execution order:
+
+```text
+admin group middleware
+audit middleware
+route handler
+```
+
+Middleware can also run code after the next handler:
+
+```php
+$app->use(function (Context $ctx) {
+    $result = $ctx->next();
+
+    $ctx->header('X-After-Middleware', 'yes');
+
+    return $result;
+});
+```
+
 ## Context
 
 Handlers receive a `Context` instance:
@@ -371,10 +431,7 @@ assert($res->body === '...');
     - Request ID middleware
     - CORS middleware
     - request logger middleware
-    - JSON body parser middleware
     - static file middleware
-
-- Middleware priority and execution order documentation
 
 Under consideration:
 

@@ -16,6 +16,7 @@ class Request
     private mixed $fileResolver;
     private ?array $files = null;
     public string $method;
+    private array $cookies;
 
     public function __construct(
         string $path = '', 
@@ -26,7 +27,8 @@ class Request
         array $headers = [],
         string $rawBody = '',
         array $parseBody = [],
-        mixed $fileResolver = null
+        mixed $fileResolver = null,
+        array $cookies = []
     ) {
         $this->path = $path;
         $this->matches = $matches;
@@ -37,6 +39,7 @@ class Request
         $this->rawBody = $rawBody;
         $this->parseBody = $parseBody;
         $this->fileResolver = $fileResolver;
+        $this->cookies = $cookies;
     }
 
     public function withRoute(string $path, array $matches): self
@@ -88,5 +91,10 @@ class Request
     {
         $files = $this->files();
         return isset($files[$key]) ? $files[$key] : null;
+    }
+
+    public function cookie(string $key): ?string 
+    {
+        return isset($this->cookies[$key]) ? $this->cookies[$key] : null;    
     }
 }
