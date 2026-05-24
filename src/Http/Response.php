@@ -9,6 +9,7 @@ class Response
     public array $headers = [];
     public string|false $body = '';
     public string|false $redirectUrl = false;
+    public array $cookies = [];
 
     public function setView(string $path): void
     {
@@ -62,5 +63,10 @@ class Response
     {
         $this->header('Content-Type', 'application/json; charset=utf-8');
         $this->body = json_encode($data);
+    }
+
+    public function setCookie(Cookie $cookie): void
+    {
+        $this->cookies[] = $cookie;
     }
 }

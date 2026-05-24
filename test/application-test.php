@@ -4,6 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Lumi\LumiPHP\Application;
 use Lumi\LumiPHP\Http\Context;
+use Lumi\LumiPHP\Http\Cookie;
 
 $app = new Application();
 
@@ -75,6 +76,12 @@ $app->post('/test/files', $testMiddleware, function (Context $ctx) {
     }
 
     return $ctx->json(['message' => "file uploaded"]);
+});
+
+$app->get('/test/cookie', function (Context $ctx) {
+    $ctx->setCookie(new Cookie('token', '123', expires: time() + 1000));
+
+    return $ctx->text('success set cookie');
 });
 
 $app->onError(function (\Throwable $e, Context $ctx) {

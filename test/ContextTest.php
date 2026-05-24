@@ -1,6 +1,7 @@
 <?php
 
 use Lumi\LumiPHP\Http\Context;
+use Lumi\LumiPHP\Http\Cookie;
 use Lumi\LumiPHP\Http\Request;
 use Lumi\LumiPHP\Http\Response;
 
@@ -94,4 +95,22 @@ test('Context redirect shortcut writes to the response', function () {
     assertSameValue($context->res, $response);
     assertSameValue(302, $context->res->statusCode);
     assertSameValue('/login', $context->res->redirectUrl);
+});
+
+test('Context response shortcut set cookies', function () {
+    $context = makeContext();
+
+    $token = new Cookie('token', '123');
+    $token2 = new Cookie('token2', '1234');
+
+    $context->setCookie($token);
+    $context->setCookie($token2);
+
+    assertSameValue(2, count($context->res->cookies));
+    assertSameValue($token, $context->res->cookies[0]);
+    assertSameValue('token', $context->res->cookies[0]->name);
+    assertSameValue('123', $context->res->cookies[0]->value);
+    assertSameValue($token2, $context->res->cookies[1]);
+    assertSameValue('token2', $context->res->cookies[1]->name);
+    assertSameValue('1234', $context->res->cookies[1]->value);
 });

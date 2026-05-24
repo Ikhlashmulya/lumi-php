@@ -2,16 +2,18 @@
 
 use Lumi\LumiPHP\Application;
 use Lumi\LumiPHP\Http\Context;
+use Lumi\LumiPHP\Http\Cookie;
 use Lumi\LumiPHP\Http\Request;
 
-function makeRequest(string $method, string $uri, array $queries = [], array $body = [], string $rawBody = ''): Request
+function makeRequest(string $method, string $uri, array $queries = [], array $body = [], string $rawBody = '', array $cookies = []): Request
 {
     return new Request(
         method: $method,
         uri: $uri,
         queries: $queries,
         rawBody: $rawBody,
-        parseBody: $body
+        parseBody: $body,
+        cookies: $cookies
     );
 }
 
@@ -202,4 +204,33 @@ test('Application allows middleware to run actions after next and return the res
 
     assertSameValue('Hello', $res->body);
     assertSameValue('yes', $res->headers['X-After-Middleware']);
+});
+
+test('Application returns with cookies', function () {
+    $app = new Application();
+
+    $app->get('/', function (Context $ctx) {
+        $ctx->setCookie(new Cookie('token', '123'));
+
+        return $ctx->text('success set cookie');
+    });
+
+    $res = $app->handle(makeRequest('GET', '/'));
+
+    assertSameValue('123', $res->cookies[0]->value);
+    assertSameValue('token', $res->cookies[0]->name);
+});
+
+test('Application get cookies', function () {
+    $app = new Application();
+
+    $app->get('/', function (Context $ctx) {
+        $token = $ctx->req->cookie('x-token');
+
+        return $ctx->text("token : $token");
+    });
+
+    $res = $app->handle(makeRequest('GET', '/', cookies: ['x-token' => '123']));
+
+    assertSameValue('token : 123', $res->body);
 });

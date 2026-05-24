@@ -91,4 +91,9 @@ class Context
         $this->res->view($viewName, $data);
         return $this->res;
     }
+
+    public function setCookie(Cookie $cookie): void
+    {
+        $this->res->setCookie($cookie);
+    }
 }

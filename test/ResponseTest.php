@@ -1,5 +1,6 @@
 <?php
 
+use Lumi\LumiPHP\Http\Cookie;
 use Lumi\LumiPHP\Http\Response;
 
 test('Response stores status code', function () {
@@ -63,4 +64,22 @@ test('Response throws exception when view file does not exist', function () {
     assertThrows(\RuntimeException::class, function () use ($response) {
         $response->view('nonexistent_view_file');
     });
+});
+
+test('Response with set cookies', function () {
+    $response = new Response();
+
+    $token = new Cookie('token', '123');
+    $token2 = new Cookie('token2', '1234');
+
+    $response->setCookie($token);
+    $response->setCookie($token2);
+
+    assertSameValue(2, count($response->cookies));
+    assertSameValue($token, $response->cookies[0]);
+    assertSameValue('token', $response->cookies[0]->name);
+    assertSameValue('123', $response->cookies[0]->value);
+    assertSameValue($token2, $response->cookies[1]);
+    assertSameValue('token2', $response->cookies[1]->name);
+    assertSameValue('1234', $response->cookies[1]->value);
 });
