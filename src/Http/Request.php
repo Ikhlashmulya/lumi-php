@@ -74,7 +74,8 @@ class Request
 
     public function json(): array
     {
-        return json_decode($this->rawBody, true);
+        $data = json_decode($this->rawBody, true);
+        return is_array($data) ? $data : [];
     }
 
     public function files(): array
