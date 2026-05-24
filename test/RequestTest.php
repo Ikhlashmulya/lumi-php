@@ -70,3 +70,11 @@ test('Request reads cookies', function () {
     assertSameValue('123', $request->cookie('token'));
     assertSameValue(null, $request->cookie('missing'));
 });
+
+test('Request returns empty array when json body is invalid or empty', function () {
+    $requestEmpty = new Request(rawBody: '');
+    assertSameValue([], $requestEmpty->json());
+
+    $requestInvalid = new Request(rawBody: 'invalid-json');
+    assertSameValue([], $requestInvalid->json());
+});
