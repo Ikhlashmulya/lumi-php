@@ -6,7 +6,9 @@ use Lumi\LumiPHP\Application;
 use Lumi\LumiPHP\Http\Context;
 use Lumi\LumiPHP\Http\Cookie;
 
-$app = new Application();
+$app = new Application([
+    'debug' => true
+]);
 
 $app->use(function (Context $ctx) {
     $ctx->set('fromMiddleware', 'global');
@@ -90,11 +92,11 @@ $app->get('/test/getcookie', function (Context $ctx) {
     return $ctx->text('success get cookie' . $token);
 });
 
-$app->onError(function (\Throwable $e, Context $ctx) {
-    return $ctx->res->status(500)->json([
-        'message' => $e->getMessage()
-    ]);
-});
+// $app->onError(function (\Throwable $e, Context $ctx) {
+//     return $ctx->res->status(500)->json([
+//         'message' => $e->getMessage()
+//     ]);
+// });
 
 $app->onNotFound(function (Context $ctx) {
     return $ctx->res->json([

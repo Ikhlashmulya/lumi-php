@@ -4,6 +4,7 @@ namespace Lumi\LumiPHP;
 
 use Lumi\LumiPHP\Emitter\PhpResponseEmitter;
 use Lumi\LumiPHP\Factory\PhpRequestFactory;
+use Lumi\LumiPHP\Helper\Config;
 use Lumi\LumiPHP\Http\Response;
 use Lumi\LumiPHP\Http\Context;
 use Lumi\LumiPHP\Http\Request;
@@ -18,9 +19,10 @@ class Application implements RouterInterface
     private mixed $onErrorHandler = null;
     private string $viewPath = '';
 
-    public function __construct() 
+    public function __construct(array $config = []) 
     {
         $this->router = new Router;
+        Config::set($config);
     }
 
     public function get(string $path, callable ...$handler): void
@@ -120,6 +122,7 @@ class Application implements RouterInterface
 
     public function handle(Request $req): Response
     {
+        $debugMode = Config::get('debug', false);
         $res = $this->createResponse();
 
         [$path, $matches, $handlers] = $this->router->match($req->method, $req->uri);
@@ -138,7 +141,11 @@ class Application implements RouterInterface
                         $res = $result;
                     }
                 } else {
-                    $res->status(500)->text('Internal Server Error');
+                    if ($debugMode) {
+                        $res->status(500)->json($e->getTrace());
+                    } else {
+                        $res->status(500)->text('Internal Server Error');
+                    }
                 }
             } finally {
                 return $res;
