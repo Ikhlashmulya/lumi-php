@@ -123,37 +123,53 @@ class Application implements RouterInterface
         $res = $this->createResponse();
 
         [$path, $matches, $handlers] = $this->router->match($req->method, $req->uri);
-        if (is_array($handlers) && count($handlers) > 0) {
-            $ctx = new Context($req->withRoute($path, $matches), $res);
-            $ctx->setHandlers(0, $handlers);
-            try {
-                $result = $handlers[0]($ctx);
-                if ($result instanceof Response) {
-                    $res = $result;
-                }
-            } catch (\Throwable $e) {
-                if (is_callable($this->onErrorHandler)) {
-                    $result = ($this->onErrorHandler)($e, $ctx);
-                    if ($result instanceof Response) {
-                        $res = $result;
-                    }
-                } else {
-                    $res->status(500)->text('Internal Server Error');
-                }
-            } finally {
-                return $res;
-            }
-        } else {
-            $ctx = new Context($req, $res->status(404));
-            if (is_callable($this->onNotFoundHandler)) {
-                $result = ($this->onNotFoundHandler)($ctx);
-                if ($result instanceof Response) {
-                    $res = $result;
-                }
-            } else {
-                $res->text('Url Not Found');
-            }
-            return $res;
+        if (!$this->hasHandlers($handlers)) {
+            return $this->handleNotFound($req, $res);
         }
+
+        $ctx = new Context($req->withRoute($path, $matches), $res);
+        $ctx->setHandlers(0, $handlers);
+
+        return $this->runHandlers($ctx, $handlers, $res);
+    }
+
+    private function hasHandlers(mixed $handlers): bool
+    {
+        return is_array($handlers) && count($handlers) > 0;   
+    }
+
+    private function runHandlers(Context $ctx, array $handlers, Response $res): Response
+    {
+        try {
+            return $this->toResponse($handlers[0]($ctx), $res);
+        } catch (\Throwable $e) {
+            return $this->handleError($e, $ctx, $res);
+        }
+    }
+
+    private function handleNotFound(Request $req, Response $res): Response
+    {
+        $ctx = new Context($req, $res->status(404));
+        if (!is_callable($this->onNotFoundHandler)) {
+            return $ctx->text('Url Not Found');
+        }
+
+        $result = ($this->onNotFoundHandler)($ctx);
+        return $this->toResponse($result, $res);
+    }
+
+    private function handleError(\Throwable $e, Context $ctx, Response $res): Response
+    {
+        if (!is_callable($this->onErrorHandler)) {
+            return $ctx->status(500)->text('Internal Server Error');
+        }
+
+        $result = ($this->onErrorHandler)($e, $ctx);
+        return $this->toResponse($result, $res);
+    }
+
+    private function toResponse(mixed $result, Response $fallbackResponse): Response
+    {
+        return $result instanceof Response ? $result : $fallbackResponse;
     }
 }
