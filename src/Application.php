@@ -3,6 +3,7 @@
 namespace Lumi\LumiPHP;
 
 use Lumi\LumiPHP\Emitter\PhpResponseEmitter;
+use Lumi\LumiPHP\Debug\DebugErrorHandler;
 use Lumi\LumiPHP\Factory\PhpRequestFactory;
 use Lumi\LumiPHP\Helper\Config;
 use Lumi\LumiPHP\Http\Response;
@@ -22,7 +23,14 @@ class Application implements RouterInterface
     public function __construct(array $config = []) 
     {
         $this->router = new Router;
+
         Config::set($config);
+
+        set_exception_handler([DebugErrorHandler::class, 'handle']);
+
+        set_error_handler(function($severity, $message, $file, $line) {
+           throw new \ErrorException($message, 0, $severity, $file, $line);
+        });
     }
 
     public function get(string $path, callable ...$handler): void
@@ -122,7 +130,6 @@ class Application implements RouterInterface
 
     public function handle(Request $req): Response
     {
-        $debugMode = Config::get('debug', false);
         $res = $this->createResponse();
 
         [$path, $matches, $handlers] = $this->router->match($req->method, $req->uri);
@@ -164,6 +171,10 @@ class Application implements RouterInterface
     private function handleError(\Throwable $e, Context $ctx, Response $res): Response
     {
         if (!is_callable($this->onErrorHandler)) {
+            if (Config::get('debug', false)) {
+                throw $e;
+            }
+                
             return $ctx->status(500)->text('Internal Server Error');
         }
 
