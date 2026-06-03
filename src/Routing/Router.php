@@ -19,6 +19,7 @@ class Router
 
     public function add(string $method, string $path, callable ...$handlers): void
     {
+        error_log(print_r($handlers, true));
         $route = new Route;
         $route->method = $method;
         $route->path = $path;

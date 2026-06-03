@@ -16,42 +16,42 @@ class RouterGroup implements RouterInterface
         $this->application->use($prefixPath, ...$handlers);
     }
 
-    public function get(string $path, callable ...$handler): void
+    public function get(string $path, mixed ...$handler): void
     {
         $this->application->get($this->prefixPath . $path, ...$handler);
     }
 
-    public function post(string $path, callable ...$handler): void
+    public function post(string $path, mixed ...$handler): void
     {
         $this->application->post($this->prefixPath . $path, ...$handler);
     }
 
-    public function put(string $path, callable ...$handler): void
+    public function put(string $path, mixed ...$handler): void
     {
         $this->application->put($this->prefixPath . $path, ...$handler);
     }
 
-    public function patch(string $path, callable ...$handler): void
+    public function patch(string $path, mixed ...$handler): void
     {
         $this->application->patch($this->prefixPath . $path, ...$handler);
     }
 
-    public function delete(string $path, callable ...$handler): void
+    public function delete(string $path, mixed ...$handler): void
     {
         $this->application->delete($this->prefixPath . $path, ...$handler);
     }
 
-    public function trace(string $path, callable ...$handler): void
+    public function trace(string $path, mixed ...$handler): void
     {
         $this->application->trace($this->prefixPath . $path, ...$handler);
     }
 
-    public function options(string $path, callable ...$handler): void
+    public function options(string $path, mixed ...$handler): void
     {
         $this->application->options($this->prefixPath . $path, ...$handler);
     }
 
-    public function head(string $path, callable ...$handler): void
+    public function head(string $path, mixed ...$handler): void
     {
         $this->application->head($this->prefixPath . $path, ...$handler);
     }

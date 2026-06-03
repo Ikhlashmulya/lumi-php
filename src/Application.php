@@ -23,44 +23,44 @@ class Application implements RouterInterface
         $this->router = new Router;
     }
 
-    public function get(string $path, callable ...$handler): void
+    public function get(string $path, mixed ...$handler): void
     {
-        $this->router->add('GET', $path, ...$handler);
+        $this->router->add('GET', $path, ...$this->resolveHandlers(...$handler));
     }
 
-    public function post(string $path, callable ...$handler): void
+    public function post(string $path, mixed ...$handler): void
     {
-        $this->router->add('POST', $path, ...$handler);
+        $this->router->add('POST', $path, ...$this->resolveHandlers(...$handler));
     }
 
-    public function put(string $path, callable ...$handler): void
+    public function put(string $path, mixed ...$handler): void
     {
-        $this->router->add('PUT', $path, ...$handler);
+        $this->router->add('PUT', $path, ...$this->resolveHandlers(...$handler));
     }
 
-    public function patch(string $path, callable ...$handler): void
+    public function patch(string $path, mixed ...$handler): void
     {
-        $this->router->add('PATCH', $path, ...$handler);
+        $this->router->add('PATCH', $path, ...$this->resolveHandlers(...$handler));
     }
 
-    public function delete(string $path, callable ...$handler): void
+    public function delete(string $path, mixed ...$handler): void
     {
-        $this->router->add('DELETE', $path, ...$handler);
+        $this->router->add('DELETE', $path, ...$this->resolveHandlers(...$handler));
     }
 
-    public function trace(string $path, callable ...$handler): void
+    public function trace(string $path, mixed ...$handler): void
     {
-        $this->router->add('TRACE', $path, ...$handler);
+        $this->router->add('TRACE', $path, ...$this->resolveHandlers(...$handler));
     }
 
-    public function options(string $path, callable ...$handler): void
+    public function options(string $path, mixed ...$handler): void
     {
-        $this->router->add('OPTIONS', $path, ...$handler);
+        $this->router->add('OPTIONS', $path, ...$this->resolveHandlers(...$handler));
     }
 
-    public function head(string $path, callable ...$handler): void
+    public function head(string $path, mixed ...$handler): void
     {
-        $this->router->add('HEAD', $path, ...$handler);
+        $this->router->add('HEAD', $path, ...$this->resolveHandlers(...$handler));
     }
 
     public function setView(string $path): void
@@ -171,5 +171,28 @@ class Application implements RouterInterface
     private function toResponse(mixed $result, Response $fallbackResponse): Response
     {
         return $result instanceof Response ? $result : $fallbackResponse;
+    }
+
+    private function resolveHandler(mixed $handler): callable 
+    {
+        if (is_callable($handler)) {
+            return $handler;
+        }
+
+        if (is_string($handler) && class_exists($handler)) {
+            $instance = new $handler;
+            return is_callable($instance) ? $instance : throw new \RuntimeException('Invalid handler');
+        }
+
+        throw new \RuntimeException('Invalid handler');
+    }
+
+    private function resolveHandlers(mixed ...$handlers): array 
+    {
+        $result = [];
+        foreach ($handlers as $handler) {
+            $result[] = $this->resolveHandler($handler);
+        }
+        return $result;
     }
 }
