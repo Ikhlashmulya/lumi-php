@@ -68,20 +68,18 @@ class Application implements RouterInterface
         $this->viewPath = $path;
     }
 
-    public function use(string|callable $args1, callable ...$handlers): void
+    public function use(mixed $args1, mixed ...$handlers): void
     {
         $path = '/';
-        if (is_string($args1)) {
-            $path = $args1;
-        }
-
         $handlerList = [];
-        
-        if (is_callable($args1)) {
-            $handlerList[] = $args1;
+
+        if (is_string($args1) && str_starts_with($args1, '/')) {
+            $path = $args1;
+        } else {
+            $handlerList[] = $this->resolveHandler($args1);
         }
 
-        array_push($handlerList, ...$handlers);
+        array_push($handlerList, ...$this->resolveHandlers(...$handlers));
 
         $this->router->addMiddleware($path, ...$handlerList);
     }
