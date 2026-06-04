@@ -37,4 +37,4 @@ php -S localhost:9000 index.php
 
 ## Documentation
 
-Read the full documentation in [doc.md](doc.md).
+Read the full documentation in [docs.md](docs.md).
