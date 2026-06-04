@@ -1,7 +1,6 @@
 {
     "name": "lumi/lumi-php",
     "description": "Lumi is a simple PHP framework for building simple web applications.",
-    "version": "0.6.0",
     "license": "MIT",
     "autoload": {
         "psr-4": {

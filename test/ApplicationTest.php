@@ -17,6 +17,24 @@ function makeRequest(string $method, string $uri, array $queries = [], array $bo
     );
 }
 
+class ApplicationInvokableHomeController
+{
+    public function __invoke(Context $ctx)
+    {
+        return $ctx->text('Hello from invokable controller');
+    }
+}
+
+class ApplicationInvokableNameMiddleware
+{
+    public function __invoke(Context $ctx)
+    {
+        $ctx->set('name', 'Lumi');
+
+        return $ctx->next();
+    }
+}
+
 test('Application returns text response from matching route', function () {
     $app = new Application();
     $app->get('/', function (Context $ctx) {
@@ -28,6 +46,16 @@ test('Application returns text response from matching route', function () {
     assertSameValue(200, $res->statusCode);
     assertSameValue('text/plain; charset=utf-8', $res->headers['Content-Type']);
     assertSameValue('Hello World', $res->body);
+});
+
+test('Application resolves invokable class route handlers', function () {
+    $app = new Application();
+    $app->get('/', ApplicationInvokableHomeController::class);
+
+    $res = $app->handle(makeRequest('GET', '/'));
+
+    assertSameValue(200, $res->statusCode);
+    assertSameValue('Hello from invokable controller', $res->body);
 });
 
 test('Application returns route parameters to handlers', function () {
@@ -92,6 +120,29 @@ test('Application runs middleware before route handler', function () {
     $res = $app->handle(makeRequest('GET', '/'));
 
     assertSameValue('Hello Lumi', $res->body);
+});
+
+test('Application resolves invokable class middleware', function () {
+    $app = new Application();
+    $app->use(ApplicationInvokableNameMiddleware::class);
+    $app->get('/', function (Context $ctx) {
+        return $ctx->text('Hello ' . $ctx->get('name'));
+    });
+
+    $res = $app->handle(makeRequest('GET', '/'));
+
+    assertSameValue('Hello Lumi', $res->body);
+});
+
+test('Application resolves invokable class route middleware', function () {
+    $app = new Application();
+    $app->get('/profile', ApplicationInvokableNameMiddleware::class, function (Context $ctx) {
+        return $ctx->text('Profile ' . $ctx->get('name'));
+    });
+
+    $res = $app->handle(makeRequest('GET', '/profile'));
+
+    assertSameValue('Profile Lumi', $res->body);
 });
 
 test('Application only runs middleware for matching path prefix', function () {
