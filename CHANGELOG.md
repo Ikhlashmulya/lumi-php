@@ -2,6 +2,23 @@
 
 All notable changes to Lumi will be documented in this file.
 
+## v0.7.0
+
+- Add support for invokable class route handlers using class name strings.
+- Add support for invokable class middleware in global middleware, path-scoped middleware, route middleware, and route groups.
+- Update router contracts to accept mixed handlers so class name handlers can be registered through `Application`, `RouterGroup`, and `RouterInterface`.
+- Refactor application dispatching into smaller handler resolution, not found, error, and response conversion helpers.
+- Update `Request::json()` to return an empty array for empty or invalid JSON bodies. by [@muhmuslimabdulj](https://github.com/muhmuslimabdulj)
+
+- Add application tests for invokable class route handlers, global middleware, and route middleware.
+- Add request tests for empty and invalid JSON bodies.
+- Move manual application examples from `test/application-test.php` into the `examples` directory.
+- Add feature-focused examples for basic routing, middleware, request bodies, views, uploads, cookies, route groups, and error handling.
+- Split documentation into a shorter `README.md` and full `docs.md`.
+- Update documentation for cookies and invokable class handlers.
+- Remove the explicit Composer `version` field from `composer.json`. by [@muhmuslimabdulj](https://github.com/muhmuslimabdulj)
+
+
 ## v0.6.0
 
 - Add request and response cookie handling.
