@@ -5,7 +5,7 @@ use Lumi\LumiPHP\Http\Context;
 use Lumi\LumiPHP\Http\Cookie;
 use Lumi\LumiPHP\Http\Request;
 
-function makeRequest(string $method, string $uri, array $queries = [], array $body = [], string $rawBody = '', array $cookies = []): Request
+function makeRequest(string $method, string $uri, array $queries = [], array $body = [], string $rawBody = '', array $cookies = [], string $ip = '127.0.0.1'): Request
 {
     return new Request(
         method: $method,
@@ -13,7 +13,8 @@ function makeRequest(string $method, string $uri, array $queries = [], array $bo
         queries: $queries,
         rawBody: $rawBody,
         parseBody: $body,
-        cookies: $cookies
+        cookies: $cookies,
+        ip: $ip
     );
 }
 
@@ -284,4 +285,17 @@ test('Application get cookies', function () {
     $res = $app->handle(makeRequest('GET', '/', cookies: ['x-token' => '123']));
 
     assertSameValue('token : 123', $res->body);
+});
+
+test('Application get request ip', function () {
+    $app = new Application();
+
+    $app->get('/', function (Context $ctx) {
+        $ip = $ctx->req->ip;
+        return $ctx->text("your ip is : $ip");
+    });
+
+    $res = $app->handle(makeRequest('GET', '/'));
+
+    assertSameValue('your ip is : 127.0.0.1', $res->body);
 });

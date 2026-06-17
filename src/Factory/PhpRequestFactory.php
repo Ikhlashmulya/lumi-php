@@ -23,6 +23,7 @@ class PhpRequestFactory
             parseBody: $parseBody,
             fileResolver: $fileResolver,
             cookies: self::cookies(),
+            ip: self::getRequestIp()
         );
     }
 
@@ -71,5 +72,19 @@ class PhpRequestFactory
             $cookies[$key] = $value;
         }
         return $cookies;
+    }
+
+    private static function getRequestIp(): string 
+    {
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip_list = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            return trim($ip_list[0]);
+        }
+        
+        if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+            return $_SERVER['HTTP_CF_CONNECTING_IP'];
+        }
+
+        return $_SERVER['REMOTE_ADDR'];
     }
 }

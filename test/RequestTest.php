@@ -78,3 +78,11 @@ test('Request returns empty array when json body is invalid or empty', function 
     $requestInvalid = new Request(rawBody: 'invalid-json');
     assertSameValue([], $requestInvalid->json());
 });
+
+test('Request reads request ip', function () {
+    $request = new Request(
+        ip: '127.0.0.1'
+    );
+
+    assertSameValue('127.0.0.1', $request->ip);
+});
